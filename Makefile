@@ -20,6 +20,8 @@ all:
 	@cd optee/$(OPTEE_VERSION)/toolchains;make -f toolchain.mk
 
 	@cd hello;make
+	@cd storage;make
 
 clean:
 	@cd hello;make clean
+	@cd storage;make clean
