@@ -19,9 +19,9 @@ all:
 
 	@cd optee/$(OPTEE_VERSION)/toolchains;make -f toolchain.mk
 
-	@cd hello;make
-	@cd storage;make
+	@cd host;make
+	@cd ta;make
 
 clean:
-	@cd hello;make clean
-	@cd storage;make clean
+	@cd host;make clean
+	@cd ta;make clean
