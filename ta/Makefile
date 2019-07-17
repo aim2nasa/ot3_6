@@ -11,6 +11,7 @@ all:
 	@cd os_test;make
 	@cd sims_keepalive;make
 	@cd sims;make
+	@cd rpc_test;make
 
 clean:
 	@cd hello;make clean
@@ -25,3 +26,4 @@ clean:
 	@cd os_test;make clean
 	@cd sims_keepalive;make clean
 	@cd sims;make clean
+	@cd rpc_test;make clean
