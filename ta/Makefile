@@ -9,6 +9,8 @@ all:
 	@cd crypt;make
 	@cd os_test_lib;make
 	@cd os_test;make
+	@cd sims_keepalive;make
+	@cd sims;make
 
 clean:
 	@cd hello;make clean
@@ -21,3 +23,5 @@ clean:
 	@cd crypt;make clean
 	@cd os_test_lib;make clean
 	@cd os_test;make clean
+	@cd sims_keepalive;make clean
+	@cd sims;make clean
