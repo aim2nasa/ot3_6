@@ -4,6 +4,7 @@ all:
 	@cd storage2;make
 	@cd aes_perf;make
 	@cd concurrent;make
+	@cd concurrent_large;make
 
 clean:
 	@cd hello;make clean
@@ -11,3 +12,4 @@ clean:
 	@cd storage2;make clean
 	@cd aes_perf;make clean
 	@cd concurrent;make clean
+	@cd concurrent_large;make clean
