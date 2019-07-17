@@ -5,6 +5,7 @@ all:
 	@cd aes_perf;make
 	@cd concurrent;make
 	@cd concurrent_large;make
+	@cd create_fail_test;make
 
 clean:
 	@cd hello;make clean
@@ -13,3 +14,4 @@ clean:
 	@cd aes_perf;make clean
 	@cd concurrent;make clean
 	@cd concurrent_large;make clean
+	@cd create_fail_test;make clean
