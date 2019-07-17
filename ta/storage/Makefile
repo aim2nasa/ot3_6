@@ -1,2 +1,2 @@
-BINARY = d18e20ef-01fe-4e9d-a469-69e3227ee6e9
+BINARY = b689f2a7-8adf-477a-9f99-32e90c0ad0a2
 include ../ta_common.mk
