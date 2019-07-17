@@ -7,6 +7,8 @@ all:
 	@cd concurrent_large;make
 	@cd create_fail_test;make
 	@cd crypt;make
+	@cd os_test_lib;make
+	@cd os_test;make
 
 clean:
 	@cd hello;make clean
@@ -17,3 +19,5 @@ clean:
 	@cd concurrent_large;make clean
 	@cd create_fail_test;make clean
 	@cd crypt;make clean
+	@cd os_test_lib;make clean
+	@cd os_test;make clean
