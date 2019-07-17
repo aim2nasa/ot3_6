@@ -14,6 +14,7 @@ all:
 	@cd rpc_test;make
 	@cd sdp_basic;make
 	@cd sha_perf;make
+	@cd socket;make
 
 clean:
 	@cd hello;make clean
@@ -31,3 +32,4 @@ clean:
 	@cd rpc_test;make clean
 	@cd sdp_basic;make clean
 	@cd sha_perf;make clean
+	@cd socket;make clean
