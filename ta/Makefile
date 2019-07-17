@@ -15,6 +15,7 @@ all:
 	@cd sdp_basic;make
 	@cd sha_perf;make
 	@cd socket;make
+	@cd storage_benchmark;make
 
 clean:
 	@cd hello;make clean
@@ -33,3 +34,4 @@ clean:
 	@cd sdp_basic;make clean
 	@cd sha_perf;make clean
 	@cd socket;make clean
+	@cd storage_benchmark;make clean
