@@ -8,3 +8,5 @@
 *.ta
 hello/host/hello
 optee/3.6/toolchains/
+host/storageTest/enumFiles/enumFiles
+host/storageTest/perObj/perObj
