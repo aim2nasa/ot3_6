@@ -11,3 +11,6 @@ optee/3.6/toolchains/
 host/hello/hello
 host/storageTest/enumFiles/enumFiles
 host/storageTest/perObj/perObj
+ta/crypt/ca_crt.c
+ta/crypt/mid_crt.c
+ta/crypt/mid_key.c
