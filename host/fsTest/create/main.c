@@ -17,60 +17,60 @@ int main(int argc, char *argv[])
 	uint32_t obj;
 	uint32_t storage_id = TEE_STORAGE_PRIVATE;
 
-        printf("TEEC_InitializeContext...\n");
-        res = TEEC_InitializeContext(NULL,&ctx);
-        if(res!=TEEC_SUCCESS)
-                errx(1,"TEEC_InitializeContext failed with code 0x%x",res);
-        printf("TEEC_InitializeContext ok\n");
+	printf("TEEC_InitializeContext...\n");
+	res = TEEC_InitializeContext(NULL,&ctx);
+	if(res!=TEEC_SUCCESS)
+		errx(1,"TEEC_InitializeContext failed with code 0x%x",res);
+	printf("TEEC_InitializeContext ok\n");
 
-        printf("TEEC_OpenSession...\n");
-        res = TEEC_OpenSession(&ctx,&sess,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL,&err_origin);
-        if(res!=TEEC_SUCCESS)
-                errx(1,"TEEC_OpenSession failed with code 0x%x origin 0x%x",res,err_origin);
-        printf("TEEC_OpenSession ok\n");
+	printf("TEEC_OpenSession...\n");
+	res = TEEC_OpenSession(&ctx,&sess,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL,&err_origin);
+	if(res!=TEEC_SUCCESS)
+		errx(1,"TEEC_OpenSession failed with code 0x%x origin 0x%x",res,err_origin);
+	printf("TEEC_OpenSession ok\n");
 
-        printf("Creating in TA...\n");
+	printf("Creating in TA...\n");
 	res = fs_create(&sess,objectID,sizeof(objectID),
-		TEE_DATA_FLAG_ACCESS_WRITE|
-		TEE_DATA_FLAG_ACCESS_WRITE_META,
-		0,data,sizeof(data),&obj,storage_id);
-        if(res!=TEEC_SUCCESS)
-                errx(1,"fs_create failed with code 0x%x",res);
-        printf("Created in TA, obj=0x%x\n",obj);
+					TEE_DATA_FLAG_ACCESS_WRITE|
+					TEE_DATA_FLAG_ACCESS_WRITE_META,
+					0,data,sizeof(data),&obj,storage_id);
+	if(res!=TEEC_SUCCESS)
+		errx(1,"fs_create failed with code 0x%x",res);
+	printf("Created in TA, obj=0x%x\n",obj);
 
-        printf("Closing...\n");
+	printf("Closing...\n");
 	res = fs_close(&sess,obj);
-        if(res!=TEEC_SUCCESS)
-                errx(1,"fs_close failed with code 0x%x",res);
-        printf("Closed\n");
+	if(res!=TEEC_SUCCESS)
+		errx(1,"fs_close failed with code 0x%x",res);
+	printf("Closed\n");
 
-        printf("Opening...\n");
+	printf("Opening...\n");
 	res = fs_open(&sess,objectID,sizeof(objectID),TEE_DATA_FLAG_ACCESS_WRITE_META,&obj,storage_id);
-        if(res!=TEEC_SUCCESS)
-                errx(1,"fs_open failed with code 0x%x",res);
-        printf("Opened\n");
+	if(res!=TEEC_SUCCESS)
+		errx(1,"fs_open failed with code 0x%x",res);
+	printf("Opened\n");
 
-        printf("Closing...\n");
+	printf("Closing...\n");
 	res = fs_close(&sess,obj);
-        if(res!=TEEC_SUCCESS)
-                errx(1,"fs_close failed with code 0x%x",res);
-        printf("Closed\n");
+	if(res!=TEEC_SUCCESS)
+		errx(1,"fs_close failed with code 0x%x",res);
+	printf("Closed\n");
 
-        printf("Opening...\n");
+	printf("Opening...\n");
 	res = fs_open(&sess,objectID,sizeof(objectID),TEE_DATA_FLAG_ACCESS_WRITE_META,&obj,storage_id);
-        if(res!=TEEC_SUCCESS)
-                errx(1,"fs_open failed with code 0x%x",res);
-        printf("Opened\n");
+	if(res!=TEEC_SUCCESS)
+		errx(1,"fs_open failed with code 0x%x",res);
+	printf("Opened\n");
 
-        printf("Unlink...\n");
+	printf("Unlink...\n");
 	res = fs_unlink(&sess,obj);
-        if(res!=TEEC_SUCCESS)
-                errx(1,"fs_unlink failed with code 0x%x",res);
-        printf("Unlink done\n");
+	if(res!=TEEC_SUCCESS)
+		errx(1,"fs_unlink failed with code 0x%x",res);
+	printf("Unlink done\n");
 
-        printf("TEEC_FinalizeContext...\n");
-        TEEC_FinalizeContext(&ctx);
-        printf("TEEC_FinalizeContext ok\n");
+	printf("TEEC_FinalizeContext...\n");
+	TEEC_FinalizeContext(&ctx);
+	printf("TEEC_FinalizeContext ok\n");
 
 	printf("PersitentObj end\n");
 	return 0;
