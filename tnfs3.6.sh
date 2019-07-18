@@ -14,6 +14,9 @@ cp ta/hello/973c225c-4f59-465c-9aa5-9b6b4d40b910.ta $TA_DIR
 cp host/storageTest/enumFiles/enumFiles $ROOT
 cp host/storageTest/perObj/perObj $ROOT
 
+cp -a host/libfs/libfs.so* $NFS/lib
+cp host/fsTest/create/create $ROOT
+
 cp ./ta/concurrent_large/5ce0c432-0ab0-40e5-a056-782ca0e6aba2.ta $TA_DIR
 cp ./ta/rpc_test/d17f73a0-36ef-11e1-984a-0002a5d5c51b.ta $TA_DIR
 cp ./ta/concurrent/e13010e0-2ae1-11e5-896a-0002a5d5c51b.ta $TA_DIR
