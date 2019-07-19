@@ -1,5 +1,4 @@
 #include "fs.h"
-#include <stdlib.h>
 
 TEEC_Result fs_open(oc *o, void *id, uint32_t id_size,
 			   uint32_t flags, uint32_t *obj, uint32_t storage_id)
