@@ -16,5 +16,5 @@ ta/crypt/mid_crt.c
 ta/crypt/mid_key.c
 ta/os_test_lib/libos_test.so
 ta/os_test_lib/libos_test.stripped.so
-host/fsTest/create/create
+host/libfsTest/create/create
 host/libfs/libfs.so*
