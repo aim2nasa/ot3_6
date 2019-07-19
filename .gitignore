@@ -18,3 +18,4 @@ ta/os_test_lib/libos_test.so
 ta/os_test_lib/libos_test.stripped.so
 host/libfs/libfs.so*
 host/libfs/test/create/create
+host/libsess/libsess.so*
