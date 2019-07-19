@@ -1,8 +1,6 @@
 #include "fs.h"
 #include <stdlib.h>
 
-#define TEEC_OPERATION_INITIALIZER {}
-
 TEEC_Result fs_open(oc *o, void *id, uint32_t id_size,
 			   uint32_t flags, uint32_t *obj, uint32_t storage_id)
 {
