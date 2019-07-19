@@ -2,7 +2,6 @@
 #define __FS_H__
 
 #include <tee_client_api.h>
-#include <ta_storage.h>
 
 #ifdef __cplusplus
 extern "C" {
