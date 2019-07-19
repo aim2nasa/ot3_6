@@ -13,10 +13,12 @@ $(BINARY): $(OBJS)
 	@echo $@:$(OBJS)...
 	$(CC) -shared -Wl,-soname,$@ -o $@ $< $(LDADD)
 	ln -s $(BINARY) $(LIBNAME).so
+	@cd test;make
 
 fs.o : fs.c
 	@echo $@...
 	$(CC) -fPIC -c $^ $(CFLAGS)
 
 clean:
+	@cd test;make clean
 	rm -f $(OBJS) $(BINARY) $(LIBNAME).*
