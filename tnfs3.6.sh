@@ -14,6 +14,7 @@ cp ta/hello/973c225c-4f59-465c-9aa5-9b6b4d40b910.ta $TA_DIR
 cp host/storageTest/enumFiles/enumFiles $ROOT
 cp host/storageTest/perObj/perObj $ROOT
 
+cp -a host/libsess/libsess.so* $NFS/lib
 cp -a host/libfs/libfs.so* $NFS/lib
 cp host/libfs/test/create/create $ROOT
 
