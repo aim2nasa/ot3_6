@@ -1,6 +1,5 @@
 #include "fs.h"
 #include <stdlib.h>
-#include <ta_storage.h>
 
 #define TEEC_OPERATION_INITIALIZER {}
 
