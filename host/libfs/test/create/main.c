@@ -10,24 +10,24 @@ static uint8_t data[] = { 0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x1a,0x1b };
 int main(int argc, char *argv[])
 {
 	TEEC_Result res;
-	fs f;
+	oc o;
 	uint32_t obj;
 	uint32_t storage_id = TEE_STORAGE_PRIVATE;
 
 	printf("initializeContext...\n");
-	res = initializeContext(NULL,&f);
+	res = initializeContext(NULL,&o);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"initializeContext failed with code 0x%x",res);
 	printf("initializeContext ok\n");
 
 	printf("openSession...\n");
-	res = openSession(&f,TEEC_LOGIN_PUBLIC,NULL,NULL);
+	res = openSession(&o,getUUID(),TEEC_LOGIN_PUBLIC,NULL,NULL);
 	if(res!=TEEC_SUCCESS)
-		errx(1,"openSession failed with code 0x%x origin 0x%x",res,f.error);
+		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.error);
 	printf("openSession ok\n");
 
 	printf("Creating in TA...\n");
-	res = fs_create(&f,objectID,sizeof(objectID),
+	res = fs_create(&o,objectID,sizeof(objectID),
 					TEE_DATA_FLAG_ACCESS_WRITE|
 					TEE_DATA_FLAG_ACCESS_WRITE_META,
 					0,data,sizeof(data),&obj,storage_id);
@@ -36,41 +36,41 @@ int main(int argc, char *argv[])
 	printf("Created in TA, obj=0x%x\n",obj);
 
 	printf("Closing...\n");
-	res = fs_close(&f,obj);
+	res = fs_close(&o,obj);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"fs_close failed with code 0x%x",res);
 	printf("Closed\n");
 
 	printf("Opening...\n");
-	res = fs_open(&f,objectID,sizeof(objectID),TEE_DATA_FLAG_ACCESS_WRITE_META,&obj,storage_id);
+	res = fs_open(&o,objectID,sizeof(objectID),TEE_DATA_FLAG_ACCESS_WRITE_META,&obj,storage_id);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"fs_open failed with code 0x%x",res);
 	printf("Opened\n");
 
 	printf("Closing...\n");
-	res = fs_close(&f,obj);
+	res = fs_close(&o,obj);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"fs_close failed with code 0x%x",res);
 	printf("Closed\n");
 
 	printf("Opening...\n");
-	res = fs_open(&f,objectID,sizeof(objectID),TEE_DATA_FLAG_ACCESS_WRITE_META,&obj,storage_id);
+	res = fs_open(&o,objectID,sizeof(objectID),TEE_DATA_FLAG_ACCESS_WRITE_META,&obj,storage_id);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"fs_open failed with code 0x%x",res);
 	printf("Opened\n");
 
 	printf("Unlink...\n");
-	res = fs_unlink(&f,obj);
+	res = fs_unlink(&o,obj);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"fs_unlink failed with code 0x%x",res);
 	printf("Unlink done\n");
 
 	printf("closeSession...\n");
-	closeSession(&f);
+	closeSession(&o);
 	printf("closeSession ok\n");
 
 	printf("finalizeContext...\n");
-	finalizeContext(&f);
+	finalizeContext(&o);
 	printf("finalizeContext ok\n");
 
 	printf("create test end\n");
