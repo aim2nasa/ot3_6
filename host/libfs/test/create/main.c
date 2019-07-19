@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
 	oc o;
 	uint32_t obj;
 	uint32_t storage_id = TEE_STORAGE_PRIVATE;
+	TEEC_UUID uuid = TA_STORAGE_UUID;
 
 	printf("initializeContext...\n");
 	res = initializeContext(NULL,&o);
@@ -21,7 +22,7 @@ int main(int argc, char *argv[])
 	printf("initializeContext ok\n");
 
 	printf("openSession...\n");
-	res = openSession(&o,getUUID(),TEEC_LOGIN_PUBLIC,NULL,NULL);
+	res = openSession(&o,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"openSession failed with code 0x%x origin 0x%x",res,o.error);
 	printf("openSession ok\n");

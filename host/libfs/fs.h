@@ -3,12 +3,12 @@
 
 #include <tee_client_api.h>
 #include <session.h>
+#include <ta_storage.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	TEEC_UUID * getUUID();
 	TEEC_Result fs_open(oc *o, void *id, uint32_t id_size,
 						uint32_t flags, uint32_t *obj, uint32_t storage_id);
 	TEEC_Result fs_create(oc *o, void *id, uint32_t id_size,

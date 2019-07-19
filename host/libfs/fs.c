@@ -1,15 +1,7 @@
 #include "fs.h"
 #include <stdlib.h>
-#include <ta_storage.h>
 
 #define TEEC_OPERATION_INITIALIZER {}
-
-TEEC_UUID uuid = TA_STORAGE_UUID; 
-
-TEEC_UUID * getUUID()
-{
-	return &uuid;
-}
 
 TEEC_Result fs_open(oc *o, void *id, uint32_t id_size,
 			   uint32_t flags, uint32_t *obj, uint32_t storage_id)
