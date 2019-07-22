@@ -16,6 +16,7 @@ cp host/storageTest/perObj/perObj $ROOT
 
 cp -a host/libsess/libsess.so* $NFS/lib
 cp -a host/libfs/libfs.so* $NFS/lib
+cp -a host/libcrypt/libcrypt.so* $NFS/lib
 cp host/libfs/test/create/create $ROOT
 
 cp ./ta/concurrent_large/5ce0c432-0ab0-40e5-a056-782ca0e6aba2.ta $TA_DIR
