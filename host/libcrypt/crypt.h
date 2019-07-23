@@ -9,6 +9,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+	TEEC_Result ta_crypt_cmd_sha256(oc *o,
+					const void *src, size_t src_len,void *dst, size_t *dst_len);
 	TEEC_Result ta_crypt_cmd_aes256ecb_enc(oc *o,
 					const void *src, size_t src_len,void *dst, size_t *dst_len);
 	TEEC_Result ta_crypt_cmd_aes256ecb_dec(oc *o,

@@ -4,6 +4,30 @@
 
 #include "helpers.c"
 
+TEEC_Result ta_crypt_cmd_sha256(oc *o,
+					const void *src, size_t src_len,void *dst, size_t *dst_len)
+{
+	TEEC_Result res = TEEC_ERROR_GENERIC;
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+	uint32_t ret_orig = 0;
+
+	op.params[0].tmpref.buffer = (void *)src;
+	op.params[0].tmpref.size = src_len;
+
+	op.params[1].tmpref.buffer = dst;
+	op.params[1].tmpref.size = *dst_len;
+
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_INPUT,
+									 TEEC_MEMREF_TEMP_OUTPUT,
+									 TEEC_NONE,TEEC_NONE);
+
+	res = TEEC_InvokeCommand(o->session, TA_CRYPT_CMD_SHA256, &op, &ret_orig);
+	if (res == TEEC_SUCCESS)
+		*dst_len = op.params[1].tmpref.size;
+
+	return res;
+}
+
 TEEC_Result ta_crypt_cmd_aes256ecb_enc(oc *o,
 					const void *src, size_t src_len,void *dst, size_t *dst_len)
 {
