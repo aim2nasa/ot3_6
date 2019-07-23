@@ -18,6 +18,7 @@ cp -a host/libsess/libsess.so* $NFS/lib
 cp -a host/libfs/libfs.so* $NFS/lib
 cp -a host/libcrypt/libcrypt.so* $NFS/lib
 cp host/libfs/test/create/create $ROOT
+cp host/tests/runTests $ROOT
 
 cp ./ta/concurrent_large/5ce0c432-0ab0-40e5-a056-782ca0e6aba2.ta $TA_DIR
 cp ./ta/rpc_test/d17f73a0-36ef-11e1-984a-0002a5d5c51b.ta $TA_DIR
