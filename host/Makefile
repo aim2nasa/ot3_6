@@ -4,6 +4,7 @@ all:
 	@cd libsess;make
 	@cd libfs;make
 	@cd libcrypt;make
+	@cd tests;make
 
 clean:
 	@cd hello;make clean
@@ -11,3 +12,4 @@ clean:
 	@cd libsess;make clean
 	@cd libfs;make clean
 	@cd libcrypt;make clean
+	@cd tests;make clean
