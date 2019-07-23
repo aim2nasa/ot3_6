@@ -5,13 +5,20 @@ ifeq ($(shell echo $(TEST_DEBUG)|tr [a-z] [A-Z]),YES)
 	CXXFLAGS += -D DEBUG 
 endif
 INCLUDES = -I../../googletest/googletest/include
+INCLUDES += -I../libsess -I$(TEEC_EXPORT)/include
+INCLUDES += -I../../ta/crypt/include \
+			-I../libcrypt \
+			-I$(TA_DEV_KIT_DIR)/host_include
 
 TARGET = runTests
-SRCS = main.cpp base.cpp
+SRCS = main.cpp base.cpp crypt.cpp
 OBJS = ${SRCS:.cpp=.o}
 
 GTEST_LIBRARIES = -L../../googletest/googlemock/gtest -lgtest -lpthread
-LIBS = $(GTEST_LIBRARIES)
+LIB_SESS = -L../libsess -lsess
+LIB_CRYPT = -L../libcrypt -lcrypt ../libcrypt/helpers.o
+LIB_TEEC = -lteec -L$(TEEC_EXPORT)/lib
+LIBS = $(GTEST_LIBRARIES) $(LIB_SESS) $(LIB_TEEC) $(LIB_CRYPT)
 
 all : $(TARGET)
 	@echo $@:$(TARGET)...
