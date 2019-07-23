@@ -16,7 +16,7 @@ OBJS = ${SRCS:.cpp=.o}
 
 GTEST_LIBRARIES = -L../../googletest/googlemock/gtest -lgtest -lpthread
 LIB_SESS = -L../libsess -lsess
-LIB_CRYPT = -L../libcrypt -lcrypt ../libcrypt/helpers.o
+LIB_CRYPT = -L../libcrypt -lcrypt
 LIB_TEEC = -lteec -L$(TEEC_EXPORT)/lib
 LIBS = $(GTEST_LIBRARIES) $(LIB_SESS) $(LIB_TEEC) $(LIB_CRYPT)
 
