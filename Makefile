@@ -18,6 +18,7 @@ all:
 	@echo OKEY_ROOT=$(OKEY_ROOT)
 
 	@cd optee/$(OPTEE_VERSION)/toolchains;make -f toolchain.mk
+	@cd googletest;cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain-arm64.cmake && make
 
 	@cd host;make
 	@cd ta;make
