@@ -18,6 +18,7 @@ cp -a host/libsess/libsess.so* $NFS/lib
 cp -a host/libfs/libfs.so* $NFS/lib
 cp -a host/libcrypt/libcrypt.so* $NFS/lib
 cp -a host/libsocket/libsocket.so* $NFS/lib
+cp -a host/libkey/libkey.so* $NFS/lib
 cp host/libfs/test/create/create $ROOT
 cp host/tests/runTests $ROOT
 
