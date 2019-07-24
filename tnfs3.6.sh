@@ -17,6 +17,7 @@ cp host/storageTest/perObj/perObj $ROOT
 cp -a host/libsess/libsess.so* $NFS/lib
 cp -a host/libfs/libfs.so* $NFS/lib
 cp -a host/libcrypt/libcrypt.so* $NFS/lib
+cp -a host/libsocket/libsocket.so* $NFS/lib
 cp host/libfs/test/create/create $ROOT
 cp host/tests/runTests $ROOT
 
