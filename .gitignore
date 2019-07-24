@@ -21,6 +21,7 @@ host/libfs/test/create/create
 host/libsess/libsess.so*
 host/libcrypt/libcrypt.so*
 host/libsocket/libsocket.so*
+host/libkey/libkey.so*
 googletest/CMakeCache.txt
 googletest/googlemock/libgmock.a
 googletest/googlemock/libgmock_main.a
