@@ -5,6 +5,7 @@ all:
 	@cd libfs;make
 	@cd libcrypt;make
 	@cd libsocket;make
+	@cd libkey;make
 	@cd tests;make
 
 clean:
@@ -14,4 +15,5 @@ clean:
 	@cd libfs;make clean
 	@cd libcrypt;make clean
 	@cd libsocket;make clean
+	@cd libkey;make clean
 	@cd tests;make clean
