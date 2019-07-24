@@ -40,3 +40,4 @@ cp ./ta/crypt/cb3e5ba0-adf1-11e0-998b-0002a5d5c51b.ta $TA_DIR
 cp ./ta/aes_perf/e626662e-c0e2-485c-b8c8-09fbce6edf3d.ta $TA_DIR
 cp ./ta/os_test/5b9e0e40-2636-11e1-ad9e-0002a5d5c51b.ta $TA_DIR
 cp ./ta/miss/528938ce-fc59-11e8-8eb2-f2801f1b9fd1.ta $TA_DIR
+cp ./ta/key/da5f2bcf-1aed-48c0-bf8e-155a9fbc35e7.ta $TA_DIR
