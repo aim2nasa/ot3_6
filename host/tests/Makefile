@@ -8,17 +8,20 @@ INCLUDES = -I../../googletest/googletest/include
 INCLUDES += -I../libsess -I$(TEEC_EXPORT)/include
 INCLUDES += -I../../ta/crypt/include \
 			-I../libcrypt \
+			-I../../ta/key/include \
+			-I../libkey \
 			-I$(TA_DEV_KIT_DIR)/host_include
 
 TARGET = runTests
-SRCS = main.cpp base.cpp crypt.cpp
+SRCS = main.cpp base.cpp crypt.cpp key.cpp
 OBJS = ${SRCS:.cpp=.o}
 
 GTEST_LIBRARIES = -L../../googletest/googlemock/gtest -lgtest -lpthread
 LIB_SESS = -L../libsess -lsess
 LIB_CRYPT = -L../libcrypt -lcrypt
 LIB_TEEC = -lteec -L$(TEEC_EXPORT)/lib
-LIBS = $(GTEST_LIBRARIES) $(LIB_SESS) $(LIB_TEEC) $(LIB_CRYPT)
+LIB_KEY = -L../libkey -lkey
+LIBS = $(GTEST_LIBRARIES) $(LIB_SESS) $(LIB_TEEC) $(LIB_CRYPT) $(LIB_KEY)
 
 all : $(TARGET)
 	@echo $@:$(TARGET)...
