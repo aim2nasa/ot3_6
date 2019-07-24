@@ -51,6 +51,7 @@ TEST(Crypt, sha256) {
 	std::cout<<"len="<<len<<std::endl;
 
 	ASSERT_EQ(memcmp(sha256_out,out,len),0);
+	ASSERT_EQ(len,sizeof(out));
 
 	closeSession(&o);
 	finalizeContext(&o);
