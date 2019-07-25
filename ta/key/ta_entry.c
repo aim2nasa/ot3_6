@@ -47,6 +47,8 @@ static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 	TEE_ObjectInfo keyInfo;
 	char *keyFileName = 0;
 	uint32_t flags;
+	char *objectId = 0;
+	size_t objectIdSize;
 
 	(void)params;
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
@@ -78,16 +80,23 @@ static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 
 	DMSG("Input params[0], storage id: %d",params[0].value.a);
 
-	if(params[1].memref.size>0) {
-		keyFileName = malloc(params[1].memref.size+1);
-		memcpy(keyFileName,params[1].memref.buffer,params[1].memref.size);
-		keyFileName[params[1].memref.size]=0;
+	objectIdSize = params[1].memref.size;
+	objectId = TEE_Malloc(objectIdSize,0);
+	if(!objectId)
+		return TEE_ERROR_OUT_OF_MEMORY;
+
+	if(objectIdSize>0) {
+		TEE_MemMove(objectId,params[1].memref.buffer,objectIdSize);
+
+		keyFileName = malloc(objectIdSize+1);
+		memcpy(keyFileName,params[1].memref.buffer,objectIdSize);
+		keyFileName[objectIdSize]=0;
 		DMSG("Input params[1], key filename: %s",keyFileName);
 
 		flags = params[2].value.a;
 		DMSG("Input params[2], flags:0x%x",flags);
 		if((result=TEE_CreatePersistentObject(params[0].value.a,
-						      params[1].memref.buffer,params[1].memref.size,
+						      objectId,objectIdSize,
 						      flags,transient_key,NULL,0,&persistent_key))!=TEE_SUCCESS){
 			EMSG("Failed to create a persistent key: 0x%x", result);
 			goto cleanup2;
@@ -102,6 +111,7 @@ cleanup2:
 	TEE_FreeTransientObject(transient_key);
 cleanup1:
 	free(keyFileName);
+	TEE_Free(objectId);
 	return result;
 }
 
