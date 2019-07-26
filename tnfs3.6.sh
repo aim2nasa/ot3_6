@@ -1,12 +1,23 @@
+#!/bin/bash
+
 NFS=/srv/nfs/linaro-stretch-developer-20180416-89
 ROOT=$NFS/root
 TA_DIR=$NFS/lib/optee_armtz
 
+if [ $# -lt 2 ];then
+	echo "usage: ./tnfs3.6.sh [OPTEE_VERSION] [TEE_TA_LOG_LEVEL]"
+	exit
+fi
+
 echo "NFS="$NFS
 echo "ROOT="$ROOT
 echo "TA_DIR="$TA_DIR
+echo "OPTEE_VERSION="$1
+echo "TEE_TA_LOG_LEVEL="$2
 
 mkdir -p $TA_DIR
+
+cp -a optee/$1/TALL$2/lib/libtee* $NFS/lib
 
 cp host/hello/hello $ROOT
 cp ta/hello/973c225c-4f59-465c-9aa5-9b6b4d40b910.ta $TA_DIR
