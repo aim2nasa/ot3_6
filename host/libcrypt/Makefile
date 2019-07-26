@@ -3,7 +3,7 @@ CC      = $(CROSS_COMPILE)gcc
 CFLAGS += -Wall -I../../ta/crypt/include -I$(TEEC_EXPORT)/include
 CFLAGS += -I../libsess
 CFLAGS += -I$(TA_DEV_KIT_DIR)/host_include
-LDADD += -lteec -L$(TEEC_EXPORT)/lib
+LDADD += -lteec -L$(TEEC_EXPORT)/TALL$(TEE_TA_LOG_LEVEL)/lib
 
 LIBNAME = libcrypt
 BINARY = $(LIBNAME).so.1 

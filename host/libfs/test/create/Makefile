@@ -6,7 +6,7 @@ CFLAGS += -Wall -I../../../../ta/include -I$(TEEC_EXPORT)/include
 CFLAGS += -I$(TA_DEV_KIT_DIR)/host_include
 CFLAGS += -I../../
 CFLAGS += -I../../../libsess
-LDADD += -lteec -L$(TEEC_EXPORT)/lib
+LDADD += -lteec -L$(TEEC_EXPORT)/TALL$(TEE_TA_LOG_LEVEL)/lib
 LDADD += -lfs -L../../
 LDADD += -lsess -L../../../libsess
 
