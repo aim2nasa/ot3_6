@@ -1,4 +1,6 @@
-# environment setting for compilation
-export CROSS_COMPILE=~/ot3.6/optee/3.6/toolchains/aarch64/bin/aarch64-linux-gnu-
-export TEEC_EXPORT=~/ot3.6/optee/3.6
-export TA_DEV_KIT_DIR=~/ot3.6/optee/3.6/arm/export-ta_arm64
+# common environment
+export OPTEE_ROOT=~/ot3.6/optee/3.6
+export CROSS_COMPILE=$OPTEE_ROOT/toolchains/aarch64/bin/aarch64-linux-gnu-
+export TEEC_EXPORT=$OPTEE_ROOT
+export TEE_TA_LOG_LEVEL=3
+export TA_DEV_KIT_DIR=$OPTEE_ROOT/TALL$TEE_TA_LOG_LEVEL/arm/export-ta_arm64
