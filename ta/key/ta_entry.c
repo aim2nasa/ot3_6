@@ -13,12 +13,14 @@
 /* Called each time a new instance is created */
 TEE_Result TA_CreateEntryPoint(void)
 {
+	DMSG("has been called");
 	return TEE_SUCCESS;
 }
 
 /* Called each time an instance is destroyed */
 void TA_DestroyEntryPoint(void)
 {
+	DMSG("has been called");
 }
 
 /* Called each time a session is opened */
@@ -29,6 +31,7 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t nParamTypes,
 	(void)nParamTypes;
 	(void)pParams;
 	(void)ppSessionContext;
+	DMSG("has been called");
 	return TEE_SUCCESS;
 }
 
@@ -36,6 +39,7 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t nParamTypes,
 void TA_CloseSessionEntryPoint(void *pSessionContext)
 {
 	(void)pSessionContext;
+	DMSG("has been called");
 }
 
 static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
@@ -124,8 +128,10 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 
 	switch (nCommandID) {
 	case TA_KEY_CMD_GENERATE:
+		IMSG("TA_KEY_CMD_GENERATE command");
 		return ta_key_cmd_generate(nParamTypes, pParams);
 	default:
+		IMSG("TEE_ERROR_BAD_PARAMETERS");
 		return TEE_ERROR_BAD_PARAMETERS;
 	}
 }
