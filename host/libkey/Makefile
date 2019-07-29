@@ -3,6 +3,7 @@ CC      = $(CROSS_COMPILE)gcc
 CFLAGS += -Wall -I../../ta/key/include -I$(TEEC_EXPORT)/include
 CFLAGS += -I../libsess
 CFLAGS += -I$(TA_DEV_KIT_DIR)/host_include
+CFLAGS += -I../libfs -I../../ta/include
 LDADD += -lteec -L$(TEEC_EXPORT)/TALL$(TEE_TA_LOG_LEVEL)/lib
 
 LIBNAME = libkey

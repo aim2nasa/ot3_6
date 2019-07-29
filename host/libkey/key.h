@@ -20,7 +20,18 @@ extern "C" {
 		RPMB = TEE_STORAGE_PRIVATE_RPMB,
 	} storageId;
 
+	typedef struct _enum_object {
+		uint8_t *id;
+		uint32_t idSize;
+	} eObj;
+
+	typedef struct _enum_object_list {
+		eObj *object;
+		struct _enum_object_list *next;
+	} eObjList;
+
 	TEEC_Result keyGen(oc *o,storageId sid,const char *keyFileName,uint32_t flags,uint32_t keySize);
+	TEEC_Result keyEnumObjectList(oc *o,storageId sid,eObjList **list);
 
 #ifdef __cplusplus
 }
