@@ -5,6 +5,10 @@
 #include <tee_api.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ta_storage.h>
+
+static TEE_UUID stor_uuid = TA_STORAGE_UUID;
+static TEE_TASessionHandle stor_session = TEE_HANDLE_NULL;
 
 /*
  * Trusted Application Entry Points
@@ -28,17 +32,27 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t nParamTypes,
 				    TEE_Param pParams[4],
 				    void **ppSessionContext)
 {
+	TEE_Result res = TEE_ERROR_GENERIC;
+	TEE_Param params[4]={};
+	uint32_t origin = 0;
+	uint32_t types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE,
+									 TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE);
+
 	(void)nParamTypes;
 	(void)pParams;
 	(void)ppSessionContext;
+
+	res = TEE_OpenTASession(&stor_uuid,0,types,params,&stor_session,&origin);
+	DMSG("TEE_OpenTASession=0x%x",res);
 	DMSG("has been called");
-	return TEE_SUCCESS;
+	return res;
 }
 
 /* Called each time a session is closed */
 void TA_CloseSessionEntryPoint(void *pSessionContext)
 {
 	(void)pSessionContext;
+	TEE_CloseTASession(stor_session);
 	DMSG("has been called");
 }
 
