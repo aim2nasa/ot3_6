@@ -136,6 +136,9 @@ cleanup1:
 static TEE_Result ta_key_cmd_list(uint32_t param_types, TEE_Param params[4])
 {
 	(void)param_types;
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_NONE,
+			  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
 	DMSG("has been called");
 
 	TEE_Result res = TEE_ERROR_GENERIC;
