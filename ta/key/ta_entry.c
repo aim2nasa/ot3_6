@@ -45,7 +45,7 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t nParamTypes,
 	res = TEE_OpenTASession(&stor_uuid,0,types,params,&stor_session,&origin);
 	DMSG("TEE_OpenTASession=0x%x",res);
 	DMSG("has been called");
-	return res;
+	return TEE_SUCCESS;
 }
 
 /* Called each time a session is closed */
@@ -130,7 +130,7 @@ cleanup2:
 cleanup1:
 	free(keyFileName);
 	TEE_Free(objectId);
-	return result;
+	return TEE_SUCCESS;
 }
 
 static TEE_Result ta_key_cmd_list(uint32_t param_types, TEE_Param params[4])
