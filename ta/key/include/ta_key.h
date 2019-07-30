@@ -7,5 +7,6 @@
 	{ 0xbf, 0x8e, 0x15, 0x5a, 0x9f, 0xbc, 0x35, 0xe7 } }
 
 #define TA_KEY_CMD_GENERATE             1
+#define TA_KEY_CMD_LIST					2
 
 #endif /*TA_KEY_H */

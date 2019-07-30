@@ -133,6 +133,11 @@ cleanup1:
 	return result;
 }
 
+static TEE_Result ta_key_cmd_list(uint32_t param_types, TEE_Param params[4])
+{
+	return TEE_SUCCESS;
+}
+
 /* Called when a command is invoked */
 TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 				      uint32_t nCommandID, uint32_t nParamTypes,
@@ -144,6 +149,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 	case TA_KEY_CMD_GENERATE:
 		IMSG("TA_KEY_CMD_GENERATE command");
 		return ta_key_cmd_generate(nParamTypes, pParams);
+	case TA_KEY_CMD_LIST:
+		IMSG("TA_KEY_CMD_LIST command");
+		return ta_key_cmd_list(nParamTypes, pParams);
 	default:
 		IMSG("TEE_ERROR_BAD_PARAMETERS");
 		return TEE_ERROR_BAD_PARAMETERS;
