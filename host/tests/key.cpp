@@ -19,3 +19,16 @@ TEST(Key, generation) {
 	closeSession(&o);
 	finalizeContext(&o);
 }
+
+TEST(Key, list) { 
+	oc o;
+	TEEC_UUID uuid = TA_KEY_UUID; 
+	ASSERT_EQ(initializeContext(NULL,&o),TEEC_SUCCESS);
+	ASSERT_EQ(openSession(&o,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL),TEEC_SUCCESS);
+
+	eObjList *list = NULL;
+	ASSERT_EQ(keyList(&o,PRIVATE/*storageId*/,&list/*eObjList***/),TEEC_SUCCESS);
+
+	closeSession(&o);
+	finalizeContext(&o);
+}

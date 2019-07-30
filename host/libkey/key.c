@@ -14,3 +14,12 @@ TEEC_Result keyGen(oc *o,storageId sid,const char *keyFileName,uint32_t flags,ui
 
 	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_GENERATE,&op,&o->error);
 }
+
+TEEC_Result keyList(oc *o,storageId sid,eObjList **list)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = sid;
+
+	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_LIST,&op,&o->error);
+}
