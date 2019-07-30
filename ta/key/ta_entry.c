@@ -135,6 +135,31 @@ cleanup1:
 
 static TEE_Result ta_key_cmd_list(uint32_t param_types, TEE_Param params[4])
 {
+	(void)param_types;
+	DMSG("has been called");
+
+	TEE_Result res = TEE_ERROR_GENERIC;
+	TEE_ObjectEnumHandle oe = TEE_HANDLE_NULL;
+	res = TEE_AllocatePersistentObjectEnumerator(&oe);
+	DMSG("TEE_AllocatePersistentObjectEnumerator=0x%x,objectEnumHandle=%p",res,oe);
+	if(res!=TEE_SUCCESS) return res;
+
+	DMSG("storageID=0x%x",params[0].value.a);
+	res = TEE_StartPersistentObjectEnumerator(oe,params[0].value.a);
+	DMSG("TEE_StartPersistentObjectEnumerator=0x%x",res);
+	if(res!=TEE_SUCCESS) return res;
+
+	TEE_ObjectInfo obj;
+	uint8_t objectID[TEE_OBJECT_ID_MAX_LEN];
+	uint32_t objectIDLen;
+
+	DMSG("TEE_GetNextPersistentObject start");
+	while(TEE_SUCCESS==TEE_GetNextPersistentObject(oe,&obj,objectID,&objectIDLen)){
+		objectID[objectIDLen]=0;
+		DMSG("objectID:%s,objectIDLen=%u",objectID,objectIDLen);
+	}
+	DMSG("TEE_GetNextPersistentObject end");
+	TEE_FreePersistentObjectEnumerator(oe);
 	return TEE_SUCCESS;
 }
 
