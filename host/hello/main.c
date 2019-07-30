@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <tee_client_api.h>
 #include <hello_ta.h>
+#include <string.h>
 
 int main(int argc, char *argv[])
 {
@@ -24,10 +25,25 @@ int main(int argc, char *argv[])
 	printf("TEEC_OpenSession ok\n");
 
 	printf("Invoking TA...\n");
-	res = TEEC_InvokeCommand(&sess,TA_HELLO_CMD,NULL,&err_origin);
+	char output[50]={ 'A' };
+	memset(output,0x41,sizeof(output));
+	printf("init output=%s\n",(char*)output);
+	TEEC_Operation op;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_INPUT,TEEC_MEMREF_TEMP_OUTPUT,
+									 TEEC_NONE,TEEC_NONE);
+	op.params[0].tmpref.buffer = "Hello";
+	op.params[0].tmpref.size = 5;
+	op.params[1].tmpref.buffer = &output;
+	op.params[1].tmpref.size = sizeof(output);
+
+	res = TEEC_InvokeCommand(&sess,TA_HELLO_CMD,&op,&err_origin);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
 	printf("TA Invoked\n");
+
+	printf("output size= %lu\n",op.params[1].tmpref.size);
+	output[op.params[1].tmpref.size]=0;	//make NULL
+	printf("output=%s\n",(char*)output);
 
 	printf("TEEC_FinalizeContext...\n");
 	TEEC_FinalizeContext(&ctx);
