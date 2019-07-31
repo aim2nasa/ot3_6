@@ -31,6 +31,8 @@ void TA_CloseSessionEntryPoint(void __maybe_unused *sess_ctx)
 
 static TEE_Result ta_hello_cmd(int32_t param_types, TEE_Param params[4])
 {
+	IMSG("=====params[1].memref.buffer=%p",params[0].memref.buffer);
+
 	IMSG("params[0].memref.size=%u",params[0].memref.size);
 	IMSG("params[0].memref.buffer=%*s",(int)params[0].memref.size,(char*)params[0].memref.buffer);
 	IMSG("params[1].memref.size=%u",params[1].memref.size);

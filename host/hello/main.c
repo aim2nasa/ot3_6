@@ -36,10 +36,13 @@ int main(int argc, char *argv[])
 	op.params[1].tmpref.buffer = &output;
 	op.params[1].tmpref.size = sizeof(output);
 
+	printf("1====> op.params[1].tmpref.buffer=%p\n",op.params[1].tmpref.buffer);
+
 	res = TEEC_InvokeCommand(&sess,TA_HELLO_CMD,&op,&err_origin);
 	if(res!=TEEC_SUCCESS)
 		errx(1,"TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res,err_origin);
 	printf("TA Invoked\n");
+	printf("2====> op.params[1].tmpref.buffer=%p\n",op.params[1].tmpref.buffer);
 
 	printf("output size= %lu\n",op.params[1].tmpref.size);
 	output[op.params[1].tmpref.size]=0;	//make NULL
