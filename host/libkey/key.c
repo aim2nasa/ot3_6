@@ -25,7 +25,7 @@ TEEC_Result keyList(oc *o,storageId sid,eObjList **list)
 	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_LIST,&op,&o->error);
 }
 
-TEEC_Result fs_alloc_enum(oc *o, uint32_t *e)
+TEEC_Result keyAllocEnum(oc *o, uint32_t *e)
 {
 	TEEC_Result res = TEEC_ERROR_GENERIC;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
@@ -42,7 +42,7 @@ TEEC_Result fs_alloc_enum(oc *o, uint32_t *e)
 	return res;
 }
 
-TEEC_Result fs_reset_enum(oc *o, uint32_t e)
+TEEC_Result keyResetEnum(oc *o, uint32_t e)
 {
 	TEEC_Result res = TEEC_ERROR_GENERIC;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
@@ -57,7 +57,7 @@ TEEC_Result fs_reset_enum(oc *o, uint32_t e)
 	return res;
 }
 
-TEEC_Result fs_free_enum(oc *o, uint32_t e)
+TEEC_Result keyFreeEnum(oc *o, uint32_t e)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint32_t org = 0;
@@ -70,7 +70,7 @@ TEEC_Result fs_free_enum(oc *o, uint32_t e)
 	return TEEC_InvokeCommand(o->session, TA_KEY_CMD_FREE_ENUM, &op, &org);
 }
 
-TEEC_Result fs_start_enum(oc *o, uint32_t e,uint32_t storage_id)
+TEEC_Result keyStartEnum(oc *o, uint32_t e,uint32_t storage_id)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint32_t org = 0;
@@ -84,7 +84,7 @@ TEEC_Result fs_start_enum(oc *o, uint32_t e,uint32_t storage_id)
 	return TEEC_InvokeCommand(o->session, TA_KEY_CMD_START_ENUM, &op, &org);
 }
 
-TEEC_Result fs_next_enum(oc *o, uint32_t e, void *obj_info,
+TEEC_Result keyNextEnum(oc *o, uint32_t e, void *obj_info,
 						 size_t info_size, void *id, uint32_t id_size)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
