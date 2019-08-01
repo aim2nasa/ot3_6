@@ -86,7 +86,7 @@ TEEC_Result keyStartEnum(oc *o, uint32_t e,uint32_t storage_id)
 }
 
 TEEC_Result keyNextEnum(oc *o, uint32_t e, void *obj_info,
-						 size_t info_size, void *id, uint32_t id_size)
+						 size_t *info_size, void *id, uint32_t *id_size)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 	uint32_t org = 0;
@@ -98,11 +98,16 @@ TEEC_Result keyNextEnum(oc *o, uint32_t e, void *obj_info,
 
 	op.params[0].value.a = e;
 	op.params[1].tmpref.buffer = obj_info;
-	op.params[1].tmpref.size = info_size;
+	op.params[1].tmpref.size = *info_size;
 	op.params[2].tmpref.buffer = id;
-	op.params[2].tmpref.size = id_size;
+	op.params[2].tmpref.size = *id_size;
 
-	return TEEC_InvokeCommand(o->session, TA_KEY_CMD_NEXT_ENUM, &op, &org);
+	TEEC_Result res = TEEC_InvokeCommand(o->session, TA_KEY_CMD_NEXT_ENUM, &op, &org);
+	if(res==TEEC_SUCCESS){
+		*info_size = op.params[1].tmpref.size;
+		*id_size = op.params[2].tmpref.size;
+	}
+	return res;
 }
 
 TEEC_Result keyEnumObjectList(oc *o,storageId sid,eObjList **list)
@@ -128,7 +133,7 @@ TEEC_Result keyEnumObjectList(oc *o,storageId sid,eObjList **list)
 	infoSize = sizeof(info);
 	idSize = sizeof(id);
 
-	while(TEEC_SUCCESS==keyNextEnum(o,enumHandle,info,infoSize,id,idSize)){
+	while(TEEC_SUCCESS==keyNextEnum(o,enumHandle,info,&infoSize,id,&idSize)){
 		eObj *obj = NULL;
 		eObjList *objectList = (eObjList*)malloc(sizeof(eObjList));
 
