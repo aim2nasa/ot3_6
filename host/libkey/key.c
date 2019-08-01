@@ -1,5 +1,6 @@
 #include "key.h"
 #include <string.h>
+#include <stdlib.h>
 
 TEEC_Result keyGen(oc *o,storageId sid,const char *keyFileName,uint32_t flags,uint32_t keySize)
 {
@@ -102,4 +103,72 @@ TEEC_Result keyNextEnum(oc *o, uint32_t e, void *obj_info,
 	op.params[2].tmpref.size = id_size;
 
 	return TEEC_InvokeCommand(o->session, TA_KEY_CMD_NEXT_ENUM, &op, &org);
+}
+
+TEEC_Result keyEnumObjectList(oc *o,storageId sid,eObjList **list)
+{
+	TEEC_Result res;
+	uint32_t enumHandle;
+	size_t infoSize;
+	uint32_t idSize;
+	uint8_t info[256];
+	uint8_t id[256+1];	//+1 to include null at the end of name
+	eObjList *prev = NULL;
+
+	*list = NULL;
+
+	res = keyAllocEnum(o,&enumHandle);
+        if(res!=TEEC_SUCCESS) return res;
+
+	res = keyStartEnum(o,enumHandle,sid);
+        if(res!=TEEC_SUCCESS) return res;
+
+	memset((void*)info,0,sizeof(info));
+	memset((void*)id,0,sizeof(id));
+	infoSize = sizeof(info);
+	idSize = sizeof(id);
+
+	while(TEEC_SUCCESS==keyNextEnum(o,enumHandle,info,infoSize,id,idSize)){
+		eObj *obj = NULL;
+		eObjList *objectList = (eObjList*)malloc(sizeof(eObjList));
+
+		if(*list==NULL) *list = objectList; 
+
+		obj = (eObj*)malloc(sizeof(eObj));
+		obj->idSize = idSize;
+		obj->id = (uint8_t*)malloc(idSize);
+		memcpy(obj->id,id,idSize);
+
+		objectList->object = obj;
+		objectList->next = NULL;
+		if(prev) prev->next = objectList;
+
+		prev = objectList;
+		infoSize = sizeof(info);
+		idSize = sizeof(id);
+	}
+
+	res = keyFreeEnum(o,enumHandle);
+        if(res!=TEEC_SUCCESS) return res;
+
+	return res;
+}
+
+int keyFreeEnumObjectList(eObjList *list)
+{
+	int nCount = 0;
+	eObjList *cur = list;
+	while(cur){
+		eObjList *next = cur->next;
+		free(cur->object->id);
+		free(cur->object);
+		free(cur);
+		if(next) {
+			cur = next;
+		}else{
+			cur = NULL;
+		}
+		nCount++;
+	}
+	return nCount;
 }
