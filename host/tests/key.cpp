@@ -32,3 +32,36 @@ TEST(Key, list) {
 	closeSession(&o);
 	finalizeContext(&o);
 }
+
+void display(eObjList *list)
+{
+	int i=0;
+	char id[TEE_OBJECT_ID_MAX_LEN+1]={0};
+	eObjList *cur=list;
+
+	while(cur){
+		memcpy(id,cur->object->id,cur->object->idSize);
+		id[cur->object->idSize]=0;
+
+		std::cout<<"["<<i++<<"] "<<id<<std::endl;
+
+		if(cur->next)
+			cur = cur->next;
+		else
+			cur = NULL;
+	}
+}
+
+TEST(Key, eObjList) { 
+	oc o;
+	TEEC_UUID uuid = TA_KEY_UUID; 
+	ASSERT_EQ(initializeContext(NULL,&o),TEEC_SUCCESS);
+	ASSERT_EQ(openSession(&o,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL),TEEC_SUCCESS);
+
+	eObjList *list = NULL;
+	ASSERT_EQ(keyEnumObjectList(&o,PRIVATE/*storageId*/,&list/*eObjList***/),TEEC_SUCCESS);
+	display(list);
+
+	closeSession(&o);
+	finalizeContext(&o);
+}
