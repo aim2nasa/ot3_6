@@ -8,5 +8,10 @@
 
 #define TA_KEY_CMD_GENERATE             1
 #define TA_KEY_CMD_LIST					2
+#define TA_KEY_CMD_ALLOC_ENUM			3
+#define TA_KEY_CMD_FREE_ENUM			4
+#define TA_KEY_CMD_RESET_ENUM			5
+#define TA_KEY_CMD_START_ENUM			6
+#define TA_KEY_CMD_NEXT_ENUM			7
 
 #endif /*TA_KEY_H */
