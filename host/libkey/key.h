@@ -32,6 +32,12 @@ extern "C" {
 
 	TEEC_Result keyGen(oc *o,storageId sid,const char *keyFileName,uint32_t flags,uint32_t keySize);
 	TEEC_Result keyList(oc *o,storageId sid,eObjList **list);
+	TEEC_Result fs_alloc_enum(oc *o, uint32_t *e);
+	TEEC_Result fs_reset_enum(oc *o, uint32_t e);
+	TEEC_Result fs_free_enum(oc *o, uint32_t e);
+	TEEC_Result fs_start_enum(oc *o, uint32_t e,uint32_t storage_id);
+	TEEC_Result fs_next_enum(oc *o, uint32_t e, void *obj_info,
+							 size_t info_size, void *id, uint32_t id_size);
 
 #ifdef __cplusplus
 }
