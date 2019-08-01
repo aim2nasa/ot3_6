@@ -16,7 +16,7 @@ TEEC_Result keyGen(oc *o,storageId sid,const char *keyFileName,uint32_t flags,ui
 	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_GENERATE,&op,&o->error);
 }
 
-TEEC_Result keyList(oc *o,storageId sid,eObjList **list)
+TEEC_Result keyList(oc *o,storageId sid)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
 
