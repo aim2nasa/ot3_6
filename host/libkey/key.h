@@ -39,7 +39,7 @@ extern "C" {
 	TEEC_Result keyNextEnum(oc *o, uint32_t e, void *obj_info,
 							 size_t *info_size, void *id, uint32_t *id_size);
 	TEEC_Result keyEnumObjectList(oc *o,storageId sid,eObjList **list);
-	int keyFreeEnumObjectList(eObjList *list);
+	size_t keyFreeEnumObjectList(eObjList *list);
 
 #ifdef __cplusplus
 }
