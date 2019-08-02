@@ -61,6 +61,9 @@ TEST(Key, eObjList) {
 	ASSERT_EQ(keyEnumObjectList(&o,PRIVATE/*storageId*/,&list/*eObjList***/),TEEC_SUCCESS);
 	display(list);
 
+	keyFreeEnumObjectList(&list);
+	ASSERT_EQ(list,(eObjList*)NULL);
+
 	closeSession(&o);
 	finalizeContext(&o);
 }
