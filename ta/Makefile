@@ -17,6 +17,7 @@ all:
 	@cd socket;make
 	@cd storage_benchmark;make
 	@cd miss;make
+	@cd key;make
 
 clean:
 	@cd hello;make clean
@@ -37,3 +38,4 @@ clean:
 	@cd socket;make clean
 	@cd storage_benchmark;make clean
 	@cd miss;make clean
+	@cd key;make clean
