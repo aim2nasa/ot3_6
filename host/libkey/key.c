@@ -180,3 +180,29 @@ size_t keyFreeEnumObjectList(eObjList **list)
 	*list = NULL;
 	return nCount;
 }
+
+TEEC_Result keyOpen(oc *o,storageId sid,const char *keyFileName,uint32_t flags,uint32_t *keyObj)
+{
+	TEEC_Result res;
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = sid;
+	op.params[1].tmpref.buffer = (char*)keyFileName;
+	op.params[1].tmpref.size = strlen((const char*)keyFileName);
+	op.params[2].value.a = flags;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_VALUE_INPUT,TEEC_VALUE_OUTPUT);
+
+	res = TEEC_InvokeCommand(o->session,TA_KEY_CMD_OPEN,&op,&o->error);
+	if(res==TEEC_SUCCESS) *keyObj = op.params[3].value.a;
+	return res;
+}
+
+TEEC_Result keyClose(oc *o,uint32_t keyObj)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = keyObj;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
+
+	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_CLOSE,&op,&o->error);
+}
