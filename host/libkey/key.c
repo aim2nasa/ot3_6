@@ -159,10 +159,10 @@ TEEC_Result keyEnumObjectList(oc *o,storageId sid,eObjList **list)
 	return res;
 }
 
-size_t keyFreeEnumObjectList(eObjList *list)
+size_t keyFreeEnumObjectList(eObjList **list)
 {
 	size_t nCount = 0;
-	eObjList *cur = list;
+	eObjList *cur = *list;
 	while(cur){
 		eObjList *next = cur->next;
 		free(cur->object->id);
@@ -175,7 +175,6 @@ size_t keyFreeEnumObjectList(eObjList *list)
 		}
 		nCount++;
 	}
-	list->object = NULL;
-	list->next = NULL;
+	*list = NULL;
 	return nCount;
 }
