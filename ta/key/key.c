@@ -1,6 +1,6 @@
 static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 {
-	TEE_Result result = TEE_SUCCESS;
+	TEE_Result result = TEE_ERROR_GENERIC;
 	TEE_ObjectHandle transient_key = (TEE_ObjectHandle)NULL;
 	TEE_ObjectHandle persistent_key = (TEE_ObjectHandle)NULL;
 	size_t key_size;
@@ -18,23 +18,26 @@ static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 	DMSG("received key size: %zd bits",key_size);
 	if(key_size!=128 && key_size!=192 && key_size!=256) {
 		DMSG("key size: %zd bits, it must be one of 128,192,256.Otherwise not supported",key_size);
-		return TEE_ERROR_NOT_SUPPORTED;
+		result = TEE_ERROR_NOT_SUPPORTED;
+		goto out1;
 	}
 
 	if((result=TEE_AllocateTransientObject(TEE_TYPE_AES,key_size,&transient_key))!=TEE_SUCCESS){
 		EMSG("Failed to Allocate transient object handle : 0x%x",result);
-		goto cleanup1;
+		goto out1;
 	}
 	DMSG("Allocated TransientObject: %p",(void*)transient_key);
 
-
 	if((result=TEE_GenerateKey(transient_key,key_size,NULL,0))!=TEE_SUCCESS){
 		EMSG("Failed to generate a transient key: 0x%x", result);
-		goto cleanup2;
+		goto out2;
 	}
 	DMSG("Key(%zd bit) generated with TransientObject(%p)",key_size,(void*)transient_key);
 
-	TEE_GetObjectInfo1(transient_key, &keyInfo);
+	if((result=TEE_GetObjectInfo1(transient_key, &keyInfo))!=TEE_SUCCESS){
+		EMSG("Failed to GetObjectInfo1: 0x%x", result);
+		goto out3;
+	}
 	DMSG("keyInfo: %zd bytes",sizeof(TEE_ObjectInfo));
 
 	DMSG("Input params[0], storage id: %d",params[0].value.a);
@@ -47,7 +50,8 @@ static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 
 	if(keyFileNameSize==0) {
 		EMSG("Bad parameter, keyFileNameSize is zero");
-		return TEE_ERROR_BAD_PARAMETERS;
+		result = TEE_ERROR_BAD_PARAMETERS;
+		goto out4;
 	}
 
 	flags = params[2].value.a;
@@ -56,17 +60,18 @@ static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 					      keyFileName,keyFileNameSize,
 					      flags,transient_key,NULL,0,&persistent_key))!=TEE_SUCCESS){
 		EMSG("Failed to create a persistent key: 0x%x", result);
-		goto cleanup2;
+		goto out4;
 	}
 	DMSG("%s persistent object(%p) flags:0x%x created",keyFileName,(void*)persistent_key,flags);
 
+out4:
+	TEE_Free(keyFileName);
+out3:
 	TEE_CloseObject(persistent_key);
-
-cleanup2:
+out2:
 	TEE_FreeTransientObject(transient_key);
-cleanup1:
-	free(keyFileName);
-	return TEE_SUCCESS;
+out1:
+	return result;
 }
 
 static TEE_Result ta_key_cmd_list(uint32_t param_types, TEE_Param params[4])
