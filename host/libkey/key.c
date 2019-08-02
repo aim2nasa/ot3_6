@@ -175,5 +175,7 @@ size_t keyFreeEnumObjectList(eObjList *list)
 		}
 		nCount++;
 	}
+	list->object = NULL;
+	list->next = NULL;
 	return nCount;
 }
