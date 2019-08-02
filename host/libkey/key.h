@@ -32,6 +32,8 @@ extern "C" {
 
 	TEEC_Result keyGen(oc *o,storageId sid,const char *keyFileName,uint32_t flags,uint32_t keySize);
 	TEEC_Result keyList(oc *o,storageId sid);
+
+	/*Enum*/
 	TEEC_Result keyAllocEnum(oc *o, uint32_t *e);
 	TEEC_Result keyResetEnum(oc *o, uint32_t e);
 	TEEC_Result keyFreeEnum(oc *o, uint32_t e);
