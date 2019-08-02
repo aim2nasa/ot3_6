@@ -88,6 +88,12 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 	case TA_KEY_CMD_NEXT_ENUM:
 		IMSG("TA_KEY_CMD_NEXT_ENUM command");
 		return ta_key_cmd_next_enum(nParamTypes, pParams);
+	case TA_KEY_CMD_OPEN:
+		IMSG("TA_KEY_CMD_OPEN command");
+		return ta_key_cmd_open(nParamTypes, pParams);
+	case TA_KEY_CMD_CLOSE:
+		IMSG("TA_KEY_CMD_CLOSE command");
+		return ta_key_cmd_close(nParamTypes, pParams);
 	default:
 		IMSG("TEE_ERROR_BAD_PARAMETERS");
 		return TEE_ERROR_BAD_PARAMETERS;

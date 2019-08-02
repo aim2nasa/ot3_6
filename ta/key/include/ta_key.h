@@ -13,5 +13,7 @@
 #define TA_KEY_CMD_RESET_ENUM			5
 #define TA_KEY_CMD_START_ENUM			6
 #define TA_KEY_CMD_NEXT_ENUM			7
+#define TA_KEY_CMD_OPEN					8
+#define TA_KEY_CMD_CLOSE				9
 
 #endif /*TA_KEY_H */

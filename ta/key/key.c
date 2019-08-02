@@ -107,3 +107,50 @@ static TEE_Result ta_key_cmd_list(uint32_t param_types, TEE_Param params[4])
 	TEE_FreePersistentObjectEnumerator(oe);
 	return TEE_SUCCESS;
 }
+
+static TEE_Result ta_key_cmd_open(uint32_t param_types, TEE_Param params[4])
+{
+	TEE_Result result = TEE_SUCCESS;
+	TEE_ObjectHandle key = (TEE_ObjectHandle)NULL;
+	char *keyFileName = 0;
+	size_t keyFileNameSize = 0;
+	uint32_t flags;
+
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_MEMREF_INPUT,
+			   TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_VALUE_OUTPUT));
+
+	DMSG("Input params[0], storage id: %d",params[0].value.a);
+
+	keyFileNameSize = params[1].memref.size;
+	keyFileName = TEE_Malloc(keyFileNameSize+1,0);
+	TEE_MemMove(keyFileName,params[1].memref.buffer,keyFileNameSize);
+	keyFileName[keyFileNameSize]=0;
+	DMSG("Input params[1], key filename: %s",keyFileName);
+
+	flags = params[2].value.a;
+	DMSG("Input params[2], flags:0x%x",flags);
+	if((result=TEE_OpenPersistentObject(params[0].value.a,
+					    keyFileName,keyFileNameSize,
+					    flags,&key))!=TEE_SUCCESS){
+		EMSG("Failed to open a persistent key: 0x%x", result);
+		goto cleanup1;
+	}
+	params[3].value.a = (uintptr_t)key;
+	DMSG("%s persistent object(%p) flags:0x%x opened",keyFileName,(void*)key,flags);
+
+cleanup1:
+	TEE_Free(keyFileName);
+	return result;
+}
+
+static TEE_Result ta_key_cmd_close(uint32_t param_types, TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_NONE,
+			  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
+
+	DMSG("closing object(%p)",(void*)(uintptr_t)params[0].value.a);
+	TEE_CloseObject((TEE_ObjectHandle)(uintptr_t)params[0].value.a);
+	return TEE_SUCCESS;
+}
