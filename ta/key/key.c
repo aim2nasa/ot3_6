@@ -86,12 +86,12 @@ static TEE_Result ta_key_cmd_list(uint32_t param_types, TEE_Param params[4])
 	TEE_ObjectEnumHandle oe = TEE_HANDLE_NULL;
 	res = TEE_AllocatePersistentObjectEnumerator(&oe);
 	DMSG("TEE_AllocatePersistentObjectEnumerator=0x%x,objectEnumHandle=%p",res,oe);
-	if(res!=TEE_SUCCESS) return res;
+	if(res!=TEE_SUCCESS) goto out1; 
 
 	DMSG("storageID=0x%x",params[0].value.a);
 	res = TEE_StartPersistentObjectEnumerator(oe,params[0].value.a);
 	DMSG("TEE_StartPersistentObjectEnumerator=0x%x",res);
-	if(res!=TEE_SUCCESS) return res;
+	if(res!=TEE_SUCCESS) goto out2;
 
 	TEE_ObjectInfo obj;
 	uint8_t objectID[TEE_OBJECT_ID_MAX_LEN];
@@ -103,8 +103,11 @@ static TEE_Result ta_key_cmd_list(uint32_t param_types, TEE_Param params[4])
 		DMSG("objectID:%s,objectIDLen=%u",objectID,objectIDLen);
 	}
 	DMSG("TEE_GetNextPersistentObject end");
+
+out2:
 	TEE_FreePersistentObjectEnumerator(oe);
-	return TEE_SUCCESS;
+out1:
+	return res;
 }
 
 static TEE_Result ta_key_cmd_open(uint32_t param_types, TEE_Param params[4])
