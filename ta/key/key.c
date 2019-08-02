@@ -44,6 +44,10 @@ static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 
 	keyFileNameSize = params[1].memref.size;
 	keyFileName = TEE_Malloc(keyFileNameSize+1,0);
+	if(!keyFileName){
+		result = TEE_ERROR_OUT_OF_MEMORY;
+		goto out3;
+	}
 	TEE_MemMove(keyFileName,params[1].memref.buffer,keyFileNameSize);
 	keyFileName[keyFileNameSize]=0;
 	DMSG("Input params[1], key filename: %s",keyFileName);
@@ -126,6 +130,10 @@ static TEE_Result ta_key_cmd_open(uint32_t param_types, TEE_Param params[4])
 
 	keyFileNameSize = params[1].memref.size;
 	keyFileName = TEE_Malloc(keyFileNameSize+1,0);
+	if(!keyFileName){
+		result = TEE_ERROR_OUT_OF_MEMORY;
+		goto out1;
+	}
 	TEE_MemMove(keyFileName,params[1].memref.buffer,keyFileNameSize);
 	keyFileName[keyFileNameSize]=0;
 	DMSG("Input params[1], key filename: %s",keyFileName);
@@ -136,13 +144,14 @@ static TEE_Result ta_key_cmd_open(uint32_t param_types, TEE_Param params[4])
 					    keyFileName,keyFileNameSize,
 					    flags,&key))!=TEE_SUCCESS){
 		EMSG("Failed to open a persistent key: 0x%x", result);
-		goto cleanup1;
+		goto out2;
 	}
 	params[3].value.a = (uintptr_t)key;
 	DMSG("%s persistent object(%p) flags:0x%x opened",keyFileName,(void*)key,flags);
 
-cleanup1:
+out2:
 	TEE_Free(keyFileName);
+out1:
 	return result;
 }
 
