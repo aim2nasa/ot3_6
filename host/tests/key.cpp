@@ -58,10 +58,11 @@ TEST(Key, eObjList) {
 	ASSERT_EQ(openSession(&o,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL),TEEC_SUCCESS);
 
 	eObjList *list = NULL;
-	ASSERT_EQ(keyEnumObjectList(&o,PRIVATE/*storageId*/,&list/*eObjList***/),TEEC_SUCCESS);
+	size_t listSize=0;
+	ASSERT_EQ(keyEnumObjectList(&o,PRIVATE/*storageId*/,&list/*eObjList***/,&listSize),TEEC_SUCCESS);
 	display(list);
 
-	keyFreeEnumObjectList(&list);
+	ASSERT_EQ(listSize,keyFreeEnumObjectList(&list));
 	ASSERT_EQ(list,(eObjList*)NULL);
 
 	closeSession(&o);

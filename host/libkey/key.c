@@ -110,7 +110,7 @@ TEEC_Result keyNextEnum(oc *o, uint32_t e, void *obj_info,
 	return res;
 }
 
-TEEC_Result keyEnumObjectList(oc *o,storageId sid,eObjList **list)
+TEEC_Result keyEnumObjectList(oc *o,storageId sid,eObjList **list,size_t *listSize)
 {
 	TEEC_Result res;
 	uint32_t enumHandle;
@@ -133,6 +133,7 @@ TEEC_Result keyEnumObjectList(oc *o,storageId sid,eObjList **list)
 	infoSize = sizeof(info);
 	idSize = sizeof(id);
 
+	*listSize = 0;
 	while(TEEC_SUCCESS==keyNextEnum(o,enumHandle,info,&infoSize,id,&idSize)){
 		eObj *obj = NULL;
 		eObjList *objectList = (eObjList*)malloc(sizeof(eObjList));
@@ -151,6 +152,7 @@ TEEC_Result keyEnumObjectList(oc *o,storageId sid,eObjList **list)
 		prev = objectList;
 		infoSize = sizeof(info);
 		idSize = sizeof(id);
+		(*listSize)++;
 	}
 
 	res = keyFreeEnum(o,enumHandle);
