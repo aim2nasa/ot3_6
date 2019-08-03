@@ -206,3 +206,13 @@ TEEC_Result keyClose(oc *o,uint32_t keyObj)
 
 	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_CLOSE,&op,&o->error);
 }
+
+TEEC_Result keyCloseAndDelete(oc *o,uint32_t keyObj)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = keyObj;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
+
+	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_CLOSE_AND_DELETE,&op,&o->error);
+}

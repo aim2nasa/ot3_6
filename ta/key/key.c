@@ -165,3 +165,14 @@ static TEE_Result ta_key_cmd_close(uint32_t param_types, TEE_Param params[4])
 	TEE_CloseObject((TEE_ObjectHandle)(uintptr_t)params[0].value.a);
 	return TEE_SUCCESS;
 }
+
+static TEE_Result ta_key_cmd_close_and_delete(uint32_t param_types, TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_NONE,
+			  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
+
+	DMSG("close and deleting object(%p)",(void*)(uintptr_t)params[0].value.a);
+	TEE_CloseAndDeletePersistentObject1((TEE_ObjectHandle)(uintptr_t)params[0].value.a);
+	return TEE_SUCCESS;
+}

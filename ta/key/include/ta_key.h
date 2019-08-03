@@ -15,5 +15,6 @@
 #define TA_KEY_CMD_NEXT_ENUM			7
 #define TA_KEY_CMD_OPEN					8
 #define TA_KEY_CMD_CLOSE				9
+#define TA_KEY_CMD_CLOSE_AND_DELETE		10
 
 #endif /*TA_KEY_H */
