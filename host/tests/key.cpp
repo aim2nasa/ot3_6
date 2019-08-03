@@ -14,7 +14,10 @@ TEST(Key, generation) {
 					 TEE_DATA_FLAG_ACCESS_WRITE			|
 					 TEE_DATA_FLAG_SHARE_WRITE;
 
-	ASSERT_EQ(keyGen(&o,PRIVATE/*storageId*/,"testKey"/*keyFileName*/,flags,256/*keySize*/),TEEC_SUCCESS);
+	uint32_t keyObj = 0;
+	ASSERT_EQ(keyGenerate(&o,PRIVATE,"testKey",flags,256,&keyObj),TEEC_SUCCESS);
+	ASSERT_NE(keyObj,0);
+	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);
 
 	closeSession(&o);
 	finalizeContext(&o);
@@ -26,7 +29,7 @@ TEST(Key, list) {
 	ASSERT_EQ(initializeContext(NULL,&o),TEEC_SUCCESS);
 	ASSERT_EQ(openSession(&o,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL),TEEC_SUCCESS);
 
-	ASSERT_EQ(keyList(&o,PRIVATE/*storageId*/),TEEC_SUCCESS);
+	ASSERT_EQ(keyList(&o,PRIVATE),TEEC_ERROR_ITEM_NOT_FOUND);
 
 	closeSession(&o);
 	finalizeContext(&o);
@@ -57,13 +60,25 @@ TEST(Key, eObjList) {
 	ASSERT_EQ(initializeContext(NULL,&o),TEEC_SUCCESS);
 	ASSERT_EQ(openSession(&o,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL),TEEC_SUCCESS);
 
+	uint32_t flags = TEE_DATA_FLAG_ACCESS_WRITE_META	|
+					 TEE_DATA_FLAG_ACCESS_READ			|
+					 TEE_DATA_FLAG_SHARE_READ			|
+					 TEE_DATA_FLAG_ACCESS_WRITE			|
+					 TEE_DATA_FLAG_SHARE_WRITE;
+	uint32_t keyObj = 0;
+	ASSERT_EQ(keyGenerate(&o,PRIVATE,"eObjListTestKey",flags,256,&keyObj),TEEC_SUCCESS);
+
 	eObjList *list = NULL;
 	size_t listSize=0;
-	ASSERT_EQ(keyEnumObjectList(&o,PRIVATE/*storageId*/,&list/*eObjList***/,&listSize),TEEC_SUCCESS);
+	ASSERT_EQ(keyEnumObjectList(&o,PRIVATE,&list,&listSize),TEEC_SUCCESS);
 	display(list);
 
+	ASSERT_EQ(listSize,1);
 	ASSERT_EQ(listSize,keyFreeEnumObjectList(&list));
 	ASSERT_EQ(list,(eObjList*)NULL);
+
+	ASSERT_NE(keyObj,0);
+	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);
 
 	closeSession(&o);
 	finalizeContext(&o);
@@ -81,12 +96,15 @@ TEST(Key, openClose) {
 					 TEE_DATA_FLAG_ACCESS_WRITE			|
 					 TEE_DATA_FLAG_SHARE_WRITE;
 
-	ASSERT_EQ(keyGen(&o,PRIVATE/*storageId*/,"openTest"/*keyFileName*/,flags,256/*keySize*/),TEEC_SUCCESS);
+	uint32_t keyObj1 = 0;
+	ASSERT_EQ(keyGenerate(&o,PRIVATE,"openTest",flags,256,&keyObj1),TEEC_SUCCESS);
+	ASSERT_NE(keyObj1,0);
+	ASSERT_EQ(keyClose(&o,keyObj1),TEEC_SUCCESS);
 
-	uint32_t keyObj = 0;
-	ASSERT_EQ(keyOpen(&o,PRIVATE,"openTest",flags,&keyObj),TEEC_SUCCESS);
-	ASSERT_NE(keyObj,0);
-	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);
+	uint32_t keyObj2 = 0;
+	ASSERT_EQ(keyOpen(&o,PRIVATE,"openTest",flags,&keyObj2),TEEC_SUCCESS);
+	ASSERT_NE(keyObj2,0);
+	ASSERT_EQ(keyCloseAndDelete(&o,keyObj2),TEEC_SUCCESS);
 
 	closeSession(&o);
 	finalizeContext(&o);

@@ -12,9 +12,9 @@ static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 	(void)params;
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
 			  (TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_MEMREF_INPUT,
-			  TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_VALUE_INPUT));
+			  TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_VALUE_OUTPUT));
 
-	key_size = params[3].value.a;
+	key_size = params[2].value.b;
 	DMSG("received key size: %zd bits",key_size);
 	if(key_size!=128 && key_size!=192 && key_size!=256) {
 		DMSG("key size: %zd bits, it must be one of 128,192,256.Otherwise not supported",key_size);
@@ -67,7 +67,7 @@ static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 		goto out3;
 	}
 	DMSG("%s persistent object(%p) flags:0x%x created",keyFileName,(void*)persistent_key,flags);
-	TEE_CloseObject(persistent_key);
+	params[3].value.a = (uintptr_t)persistent_key;
 
 out3:
 	TEE_Free(keyFileName);
