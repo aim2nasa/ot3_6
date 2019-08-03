@@ -86,7 +86,7 @@ TEST(Key, openClose) {
 	uint32_t keyObj = 0;
 	ASSERT_EQ(keyOpen(&o,PRIVATE,"openTest",flags,&keyObj),TEEC_SUCCESS);
 	ASSERT_NE(keyObj,0);
-	ASSERT_EQ(keyClose(&o,keyObj),TEEC_SUCCESS);
+	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);
 
 	closeSession(&o);
 	finalizeContext(&o);
