@@ -36,7 +36,7 @@ static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 
 	if((result=TEE_GetObjectInfo1(transient_key, &keyInfo))!=TEE_SUCCESS){
 		EMSG("Failed to GetObjectInfo1: 0x%x", result);
-		goto out3;
+		goto out2;
 	}
 	DMSG("keyInfo: %zd bytes",sizeof(TEE_ObjectInfo));
 
@@ -46,7 +46,7 @@ static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 	keyFileName = TEE_Malloc(keyFileNameSize+1,0);
 	if(!keyFileName){
 		result = TEE_ERROR_OUT_OF_MEMORY;
-		goto out3;
+		goto out2;
 	}
 	TEE_MemMove(keyFileName,params[1].memref.buffer,keyFileNameSize);
 	keyFileName[keyFileNameSize]=0;
@@ -55,7 +55,7 @@ static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 	if(keyFileNameSize==0) {
 		EMSG("Bad parameter, keyFileNameSize is zero");
 		result = TEE_ERROR_BAD_PARAMETERS;
-		goto out4;
+		goto out3;
 	}
 
 	flags = params[2].value.a;
@@ -64,14 +64,13 @@ static TEE_Result ta_key_cmd_generate(uint32_t param_types, TEE_Param params[4])
 					      keyFileName,keyFileNameSize,
 					      flags,transient_key,NULL,0,&persistent_key))!=TEE_SUCCESS){
 		EMSG("Failed to create a persistent key: 0x%x", result);
-		goto out4;
+		goto out3;
 	}
 	DMSG("%s persistent object(%p) flags:0x%x created",keyFileName,(void*)persistent_key,flags);
-
-out4:
-	TEE_Free(keyFileName);
-out3:
 	TEE_CloseObject(persistent_key);
+
+out3:
+	TEE_Free(keyFileName);
 out2:
 	TEE_FreeTransientObject(transient_key);
 out1:
