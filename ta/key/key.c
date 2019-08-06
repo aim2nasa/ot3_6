@@ -190,7 +190,7 @@ static TEE_Result ta_key_cmd_get_object_buffer_attribute(uint32_t param_types, T
 
 	DMSG("attributeID:0x%x",params[0].value.b);
 	DMSG("TEE_ATTR_BIT_VALUE:0x%x",TEE_ATTR_BIT_VALUE);
-	result = TEE_GetObjectBufferAttribute(o,params[0].value.b,&params[1].memref.buffer,&params[1].memref.size);
+	result = TEE_GetObjectBufferAttribute(o,params[0].value.b,params[1].memref.buffer,&params[1].memref.size);
 	DMSG("TEE_GetObjectBufferAttribute=0x%x",result);
 	return result;
 }
