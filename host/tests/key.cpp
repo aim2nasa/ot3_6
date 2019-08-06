@@ -131,6 +131,9 @@ TEST(Key, getObjectBufferAttribute) {
 	ASSERT_EQ(keyGetObjectBufferAttribute(&o,keyObj,TEE_ATTR_SECRET_VALUE,keyBuffer,&keySize),TEEC_SUCCESS);
 
 	ASSERT_EQ(keySize*8,256);
+	for(size_t i=0;i<keySize;i++) std::cout<<std::hex<<(int)keyBuffer[i]<<" ";
+	std::cout<<std::endl;
+
 	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);
 
 	closeSession(&o);
