@@ -35,6 +35,7 @@ extern "C" {
 	TEEC_Result keyOpen(oc *o,storageId sid,const char *keyFileName,uint32_t flags,uint32_t *keyObj);
 	TEEC_Result keyClose(oc *o,uint32_t keyObj);
 	TEEC_Result keyCloseAndDelete(oc *o,uint32_t keyObj);
+	TEEC_Result keyGetObjectBufferAttribute(oc *o,uint32_t keyObj,uint32_t attrId,void *buffer,size_t *bufferSize);
 
 	/*Enum*/
 	TEEC_Result keyAllocEnum(oc *o, uint32_t *e);

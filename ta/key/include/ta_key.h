@@ -16,5 +16,6 @@
 #define TA_KEY_CMD_OPEN					8
 #define TA_KEY_CMD_CLOSE				9
 #define TA_KEY_CMD_CLOSE_AND_DELETE		10
+#define TA_KEY_CMD_GET_OBJECT_BUFFER_ATTRIBUTE	11
 
 #endif /*TA_KEY_H */
