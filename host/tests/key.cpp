@@ -109,3 +109,30 @@ TEST(Key, openClose) {
 	closeSession(&o);
 	finalizeContext(&o);
 }
+
+TEST(Key, getObjectBufferAttribute) {
+	oc o;
+	TEEC_UUID uuid = TA_KEY_UUID;
+	ASSERT_EQ(initializeContext(NULL,&o),TEEC_SUCCESS);
+	ASSERT_EQ(openSession(&o,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL),TEEC_SUCCESS);
+
+	uint32_t flags = TEE_DATA_FLAG_ACCESS_WRITE_META	|
+					 TEE_DATA_FLAG_ACCESS_READ			|
+					 TEE_DATA_FLAG_SHARE_READ			|
+					 TEE_DATA_FLAG_ACCESS_WRITE			|
+					 TEE_DATA_FLAG_SHARE_WRITE;
+
+	uint32_t keyObj = 0;
+	ASSERT_EQ(keyGenerate(&o,PRIVATE,"getObjBufAttrTest",flags,256,&keyObj),TEEC_SUCCESS);
+	ASSERT_NE(keyObj,0);
+
+	uint8_t keyBuffer[1024] = {0};
+	size_t keySize = sizeof(keyBuffer);
+	ASSERT_EQ(keyGetObjectBufferAttribute(&o,keyObj,TEE_ATTR_SECRET_VALUE,keyBuffer,&keySize),TEEC_SUCCESS);
+
+	ASSERT_EQ(keySize*8,256);
+	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);
+
+	closeSession(&o);
+	finalizeContext(&o);
+}

@@ -97,6 +97,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 	case TA_KEY_CMD_CLOSE_AND_DELETE:
 		IMSG("TA_KEY_CMD_CLOSE_AND_DELETE command");
 		return ta_key_cmd_close_and_delete(nParamTypes, pParams);
+	case TA_KEY_CMD_GET_OBJECT_BUFFER_ATTRIBUTE:
+		IMSG("TA_KEY_CMD_GET_OBJECT_BUFFER_ATTRIBUTE command");
+		return ta_key_cmd_get_object_buffer_attribute(nParamTypes, pParams);
 	default:
 		IMSG("TEE_ERROR_BAD_PARAMETERS");
 		return TEE_ERROR_BAD_PARAMETERS;

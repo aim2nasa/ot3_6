@@ -175,3 +175,22 @@ static TEE_Result ta_key_cmd_close_and_delete(uint32_t param_types, TEE_Param pa
 	TEE_CloseAndDeletePersistentObject1((TEE_ObjectHandle)(uintptr_t)params[0].value.a);
 	return TEE_SUCCESS;
 }
+
+static TEE_Result ta_key_cmd_get_object_buffer_attribute(uint32_t param_types, TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_MEMREF_OUTPUT,
+									  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
+
+	TEE_ObjectHandle o = VAL2HANDLE(params[0].value.a);
+	DMSG("asking getObjectAttribute objectHandle:%p,attribute:0x%x...",o,params[0].value.b);
+	TEE_ObjectInfo oi;
+	TEE_Result result = TEE_ERROR_GENERIC;
+	result = TEE_GetObjectInfo1(o,&oi);
+	DMSG("TEE_GetObjectInfo1=0x%x,objectInfo:0x%x",result,oi.objectUsage);
+
+	DMSG("attributeID:0x%x",params[0].value.b);
+	DMSG("TEE_ATTR_BIT_VALUE:0x%x",TEE_ATTR_BIT_VALUE);
+	result = TEE_GetObjectBufferAttribute(o,params[0].value.b,&params[1].memref.buffer,&params[1].memref.size);
+	DMSG("TEE_GetObjectBufferAttribute=0x%x",result);
+	return result;
+}

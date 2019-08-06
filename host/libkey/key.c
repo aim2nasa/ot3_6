@@ -218,3 +218,21 @@ TEEC_Result keyCloseAndDelete(oc *o,uint32_t keyObj)
 
 	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_CLOSE_AND_DELETE,&op,&o->error);
 }
+
+TEEC_Result keyGetObjectBufferAttribute(oc *o,uint32_t keyObj,uint32_t attrId,void *buffer,size_t *bufferSize)
+{
+	TEEC_Result res;
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	if((uintptr_t)keyObj > UINT32_MAX) return TEE_ERROR_BAD_PARAMETERS; 
+
+	op.params[0].value.a = keyObj;
+	op.params[0].value.b = attrId;
+	op.params[1].tmpref.buffer = buffer;
+	op.params[1].tmpref.size = *bufferSize;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_OUTPUT,TEEC_NONE,TEEC_NONE);
+
+	res = TEEC_InvokeCommand(o->session,TA_KEY_CMD_GET_OBJECT_BUFFER_ATTRIBUTE,&op,&o->error);
+	if (res == TEEC_SUCCESS) *bufferSize = op.params[1].tmpref.size;
+	return res;
+}
