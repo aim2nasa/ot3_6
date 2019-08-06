@@ -236,3 +236,22 @@ TEEC_Result keyGetObjectBufferAttribute(oc *o,uint32_t keyObj,uint32_t attrId,vo
 	if (res == TEEC_SUCCESS) *bufferSize = op.params[1].tmpref.size;
 	return res;
 }
+
+TEEC_Result keyGetObjectValueAttribute(oc *o,uint32_t keyObj,uint32_t attrId,uint32_t *valueA,uint32_t *valueB)
+{
+	TEEC_Result res;
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	if((uintptr_t)keyObj > UINT32_MAX) return TEE_ERROR_BAD_PARAMETERS; 
+
+	op.params[0].value.a = keyObj;
+	op.params[0].value.b = attrId;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_VALUE_OUTPUT,TEEC_NONE,TEEC_NONE);
+
+	res = TEEC_InvokeCommand(o->session,TA_KEY_CMD_GET_OBJECT_VALUE_ATTRIBUTE,&op,&o->error);
+	if (res == TEEC_SUCCESS) {
+		*valueA = op.params[1].value.a;
+		*valueB = op.params[1].value.b;
+	}
+	return res;
+}
