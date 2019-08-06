@@ -194,3 +194,12 @@ static TEE_Result ta_key_cmd_get_object_buffer_attribute(uint32_t param_types, T
 	DMSG("TEE_GetObjectBufferAttribute=0x%x",result);
 	return result;
 }
+
+static TEE_Result ta_key_cmd_get_object_value_attribute(uint32_t param_types,TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_VALUE_OUTPUT,
+									  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
+
+	TEE_ObjectHandle o = VAL2HANDLE(params[0].value.a);
+	return TEE_GetObjectValueAttribute(o,params[0].value.b,&params[1].value.a,&params[1].value.b);
+}
