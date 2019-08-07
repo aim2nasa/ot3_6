@@ -30,6 +30,7 @@ extern "C" {
 					uint32_t max_obj_size,TEE_ObjectHandle *oh);
 	TEEC_Result ta_crypt_cmd_populate_transient_object(oc *o,TEE_ObjectHandle oh,
 					const TEE_Attribute *attrs,uint32_t attr_count);
+	TEEC_Result ta_crypt_cmd_reset_transient_object(oc *o,TEE_ObjectHandle oh);
 	TEEC_Result ta_crypt_cmd_free_transient_object(oc *o,TEE_ObjectHandle oh);
 
 	TEEC_Result ta_crypt_cmd_digest_update(oc *o,TEE_OperationHandle oph,

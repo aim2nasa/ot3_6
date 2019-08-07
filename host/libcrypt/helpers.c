@@ -169,6 +169,22 @@ TEE_Result ta_crypt_cmd_set_operation_key(oc *o, TEE_OperationHandle oph, TEE_Ob
 	return res;
 }
 
+TEEC_Result ta_crypt_cmd_reset_transient_object(oc *o, TEE_ObjectHandle oh)
+{
+	TEEC_Result res = TEEC_ERROR_GENERIC;
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+	uint32_t ret_orig = 0;
+
+	assert((uintptr_t)oh <= UINT32_MAX);
+	op.params[0].value.a = (uint32_t)(uintptr_t)oh;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT, TEEC_NONE, TEEC_NONE,
+					 TEEC_NONE);
+
+	res = TEEC_InvokeCommand(o->session, TA_CRYPT_CMD_RESET_TRANSIENT_OBJECT, &op,
+				 &ret_orig);
+	return res;
+}
+
 TEEC_Result ta_crypt_cmd_free_transient_object(oc *o, TEE_ObjectHandle oh)
 {
 	TEEC_Result res = TEEC_ERROR_GENERIC;
