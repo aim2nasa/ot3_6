@@ -314,25 +314,49 @@ static TEE_Result ta_key_cmd_test(uint32_t param_types, TEE_Param params[4])
 
 	char key[32]={0,};
 	char iv[16]={1,};
-	char input[1024]={2,};
-	char output[1024]={3,};
-	uint32_t outputSize = sizeof(output);
-	aesCipher encSess;
+	char plain[1024]={2,};
+	char encrypt[1024]={3,};
+	uint32_t encryptSize = sizeof(encrypt);
 
+	aesCipher encSess;
 	result = aesInit(&encSess,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_ENCRYPT,key,sizeof(key),iv,sizeof(iv));
 	if(result!=TEE_SUCCESS) goto out1;
 	DMSG("aesInit ok");
 
-	result = TEE_CipherUpdate(encSess.operHandle,input,sizeof(input),output,&outputSize);
+	result = TEE_CipherUpdate(encSess.operHandle,plain,sizeof(plain),encrypt,&encryptSize);
 	if(result!=TEE_SUCCESS) goto out2;
-	DMSG("CipherUpdate outSize=%u",outputSize);
+	DMSG("CipherUpdate outSize=%u",encryptSize);
 	DMSG("encoding ok");
 
-	if(memcmp(input,output,sizeof(input))==0)
-		DMSG("After encoding input==ouput");
+	if(memcmp(plain,encrypt,sizeof(plain))==0)
+		DMSG("After encoding plain==encrypt");
 	else
-		DMSG("After encoding input!=ouput");
+		DMSG("After encoding plain!=encrypt");
 
+	aesCipher decSess;
+	result = aesInit(&decSess,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_DECRYPT,key,sizeof(key),iv,sizeof(iv));
+	if(result!=TEE_SUCCESS) goto out2;
+	DMSG("aesInit ok");
+
+	char decrypt[1024]={4,};
+	uint32_t decryptSize = sizeof(decrypt);
+	result = TEE_CipherUpdate(decSess.operHandle,encrypt,sizeof(encrypt),decrypt,&decryptSize);
+	if(result!=TEE_SUCCESS) goto out3;
+	DMSG("CipherUpdate outSize=%u",decryptSize);
+	DMSG("decoding ok");
+
+	if(memcmp(decrypt,encrypt,sizeof(decrypt))==0)
+		DMSG("After decoding decrypt==encrypt");
+	else
+		DMSG("After decoding decrypt!=encrypt");
+
+	if(memcmp(plain,decrypt,sizeof(plain))==0)
+		DMSG("compare plain==decrypt");
+	else
+		DMSG("compare plain!=decrypt");
+
+out3:
+	TEE_FreeOperation(decSess.operHandle);
 out2:
 	TEE_FreeOperation(encSess.operHandle);
 out1:
