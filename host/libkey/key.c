@@ -255,3 +255,14 @@ TEEC_Result keyGetObjectValueAttribute(oc *o,uint32_t keyObj,uint32_t attrId,uin
 	}
 	return res;
 }
+
+TEEC_Result keyTest(oc *o)
+{
+	TEEC_Result res = TEEC_ERROR_GENERIC;
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+	uint32_t org = 0;
+
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_NONE, TEEC_NONE,TEEC_NONE, TEEC_NONE);
+	res = TEEC_InvokeCommand(o->session, TA_KEY_CMD_TEST, &op, &org);
+	return res;
+}

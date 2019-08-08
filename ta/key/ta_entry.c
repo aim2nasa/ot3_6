@@ -67,6 +67,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 	(void)pSessionContext;
 
 	switch (nCommandID) {
+	case TA_KEY_CMD_TEST:
+		IMSG("TA_KEY_CMD_TEST command");
+		return ta_key_cmd_test(nParamTypes, pParams);
 	case TA_KEY_CMD_GENERATE:
 		IMSG("TA_KEY_CMD_GENERATE command");
 		return ta_key_cmd_generate(nParamTypes, pParams);

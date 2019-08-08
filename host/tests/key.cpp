@@ -139,3 +139,15 @@ TEST(Key, getObjectBufferAttribute) {
 	closeSession(&o);
 	finalizeContext(&o);
 }
+
+TEST(Key, test) {
+	oc o;
+	TEEC_UUID uuid = TA_KEY_UUID;
+	ASSERT_EQ(initializeContext(NULL,&o),TEEC_SUCCESS);
+	ASSERT_EQ(openSession(&o,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL),TEEC_SUCCESS);
+
+	keyTest(&o);
+
+	closeSession(&o);
+	finalizeContext(&o);
+}
