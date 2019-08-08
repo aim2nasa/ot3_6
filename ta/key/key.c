@@ -209,7 +209,6 @@ typedef struct _aesCipher{
 	uint32_t mode;						//Encode or Decode
 	uint32_t keySize;					//AES key size in byte
 	TEE_OperationHandle operHandle;		//AES ciphering operation
-	TEE_ObjectHandle keyHandle;			//Transient object to load the key
 }aesCipher;
 
 static TEE_Result algorithm(uint32_t *supAlgo,uint32_t askAlgo)
@@ -274,31 +273,32 @@ static TEE_Result aesInit(aesCipher *sess,uint32_t algo,uint32_t mod,
 	if(result!=TEE_SUCCESS) goto out1;
 	DMSG("OperationHandle=%p",sess->operHandle);
 
-	result = TEE_AllocateTransientObject(TEE_TYPE_AES,sess->keySize*8,&sess->keyHandle);
+	TEE_ObjectHandle keyHandle;	//Transient object to load the key
+	result = TEE_AllocateTransientObject(TEE_TYPE_AES,sess->keySize*8,&keyHandle);
 	if(result!=TEE_SUCCESS) goto out2;
-	DMSG("ObjectHandle=%p",sess->keyHandle);
+	DMSG("ObjectHandle=%p",keyHandle);
 
 	TEE_Attribute keyAttr;
 	keyAttr.attributeID = TEE_ATTR_SECRET_VALUE;
 	keyAttr.content.ref.buffer = (void*)key;
 	keyAttr.content.ref.length = keySize;
 
-	result = TEE_PopulateTransientObject(sess->keyHandle,&keyAttr,1);
+	result = TEE_PopulateTransientObject(keyHandle,&keyAttr,1);
 	if(result!=TEE_SUCCESS) goto out3;
 	DMSG("PopulateTransientObject");
 
-	result = TEE_SetOperationKey(sess->operHandle,sess->keyHandle);
+	result = TEE_SetOperationKey(sess->operHandle,keyHandle);
 	if(result!=TEE_SUCCESS) goto out3;
 	DMSG("SetOperationKey");
 
 	TEE_CipherInit(sess->operHandle,iv,ivSize);
 	DMSG("CipherInit");
 
-	TEE_FreeTransientObject(sess->keyHandle);
+	TEE_FreeTransientObject(keyHandle);
 	return result;
 
 out3:
-	TEE_FreeTransientObject(sess->keyHandle);
+	TEE_FreeTransientObject(keyHandle);
 out2:
 	TEE_FreeOperation(sess->operHandle);
 out1:
