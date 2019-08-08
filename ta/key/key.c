@@ -204,55 +204,104 @@ static TEE_Result ta_key_cmd_get_object_value_attribute(uint32_t param_types,TEE
 	return TEE_GetObjectValueAttribute(o,params[0].value.b,&params[1].value.a,&params[1].value.b);
 }
 
-static TEE_Result aes(bool enc,char *key,uint32_t keySize,char *iv,uint32_t ivSize,
-					  char *input,uint32_t inputSize,char *output,uint32_t *outputSize)
+typedef struct _aesCipher{
+	uint32_t algo;						//Algorithm
+	uint32_t mode;						//Encode or Decode
+	uint32_t keySize;					//AES key size in byte
+	TEE_OperationHandle operHandle;		//AES ciphering operation
+	TEE_ObjectHandle keyHandle;			//Transient object to load the key
+}aesCipher;
+
+static TEE_Result algorithm(uint32_t *supAlgo,uint32_t askAlgo)
 {
-	DMSG("aes test");
+	switch(askAlgo){
+	case TEE_ALG_AES_ECB_NOPAD:
+		*supAlgo = TEE_ALG_AES_ECB_NOPAD;
+		return TEE_SUCCESS;
+	default:
+		EMSG("Not supported algorhtim %u",askAlgo);
+		return TEE_ERROR_BAD_PARAMETERS;
+	}
+}
+
+static TEE_Result mode(uint32_t *supMode,uint32_t askMode)
+{
+	switch(askMode){
+	case TEE_MODE_ENCRYPT:
+		*supMode = TEE_MODE_ENCRYPT;
+		return TEE_SUCCESS;
+	case TEE_MODE_DECRYPT:
+		*supMode = TEE_MODE_DECRYPT;
+		return TEE_SUCCESS;
+	default:
+		EMSG("Not supported mode %u",askMode);
+		return TEE_ERROR_BAD_PARAMETERS;
+	}
+}
+
+#define AES_KEY_SIZE_128BIT	(128/8)
+#define AES_KEY_SIZE_192BIT	(192/8)
+#define AES_KEY_SIZE_256BIT	(256/8)
+
+static TEE_Result aesKeySizeInByte(uint32_t *supSize,uint32_t askSize)
+{
+	switch(askSize){
+	case AES_KEY_SIZE_128BIT:
+		*supSize = AES_KEY_SIZE_128BIT;
+		return TEE_SUCCESS;
+	case AES_KEY_SIZE_192BIT:
+		*supSize = AES_KEY_SIZE_192BIT;
+		return TEE_SUCCESS;
+	case AES_KEY_SIZE_256BIT:
+		*supSize = AES_KEY_SIZE_256BIT;
+		return TEE_SUCCESS;
+	default:
+		EMSG("Not supported size %ubytes",askSize);
+		return TEE_ERROR_BAD_PARAMETERS;
+	}
+}
+
+static TEE_Result aesInit(aesCipher *sess,uint32_t algo,uint32_t mod,
+						  char *key,uint32_t keySize,char *iv,uint32_t ivSize)
+{
 	TEE_Result result = TEE_ERROR_GENERIC;
 
-	TEE_OperationHandle oh;
-	uint32_t algo = TEE_ALG_AES_ECB_NOPAD;
-	uint32_t mode = enc?TEE_MODE_ENCRYPT:TEE_MODE_DECRYPT;
+	if((result=algorithm(&sess->algo,algo))!=TEE_SUCCESS) goto out1;
+	if((result=mode(&sess->mode,mod))!=TEE_SUCCESS) goto out1;
+	if((result=aesKeySizeInByte(&sess->keySize,keySize))!=TEE_SUCCESS) goto out1;
 
-	result = TEE_AllocateOperation(&oh,algo,mode,keySize*8);
+	result = TEE_AllocateOperation(&sess->operHandle,sess->algo,sess->mode,sess->keySize*8);
 	if(result!=TEE_SUCCESS) goto out1;
-	DMSG("OperationHandle=%p",oh);
+	DMSG("OperationHandle=%p",sess->operHandle);
 
-	TEE_ObjectHandle kh;
-	result = TEE_AllocateTransientObject(TEE_TYPE_AES,keySize*8,&kh);
+	result = TEE_AllocateTransientObject(TEE_TYPE_AES,sess->keySize*8,&sess->keyHandle);
 	if(result!=TEE_SUCCESS) goto out2;
-	DMSG("ObjectHandle=%p",kh);
+	DMSG("ObjectHandle=%p",sess->keyHandle);
 
 	TEE_Attribute keyAttr;
 	keyAttr.attributeID = TEE_ATTR_SECRET_VALUE;
 	keyAttr.content.ref.buffer = (void*)key;
 	keyAttr.content.ref.length = keySize;
 
-	result = TEE_PopulateTransientObject(kh,&keyAttr,1);
+	result = TEE_PopulateTransientObject(sess->keyHandle,&keyAttr,1);
 	if(result!=TEE_SUCCESS) goto out3;
 	DMSG("PopulateTransientObject");
 
-	result = TEE_SetOperationKey(oh,kh);
+	result = TEE_SetOperationKey(sess->operHandle,sess->keyHandle);
 	if(result!=TEE_SUCCESS) goto out3;
 	DMSG("SetOperationKey");
 
-	TEE_CipherInit(oh,iv,ivSize);
+	TEE_CipherInit(sess->operHandle,iv,ivSize);
 	DMSG("CipherInit");
 
-	result = TEE_CipherUpdate(oh,input,inputSize,output,outputSize);
-	if(result!=TEE_SUCCESS) goto out3;
-	DMSG("CipherUpdate outSize=%u",*outputSize);
-
-	result = TEE_CipherDoFinal(oh,input,inputSize,output,outputSize);
-	if(result!=TEE_SUCCESS) goto out3;
-	DMSG("CipherDoFinal outSize=%u",*outputSize);
+	TEE_FreeTransientObject(sess->keyHandle);
+	return result;
 
 out3:
-	TEE_FreeTransientObject(kh);
+	TEE_FreeTransientObject(sess->keyHandle);
 out2:
-	TEE_FreeOperation(oh);
+	TEE_FreeOperation(sess->operHandle);
 out1:
-	DMSG("End aes");
 	return result;
 }
 
@@ -268,8 +317,15 @@ static TEE_Result ta_key_cmd_test(uint32_t param_types, TEE_Param params[4])
 	char input[1024]={2,};
 	char output[1024]={3,};
 	uint32_t outputSize = sizeof(output);
-	result = aes(true,key,sizeof(key),iv,sizeof(iv),input,sizeof(input),output,&outputSize);
+	aesCipher sess;
+
+	result = aesInit(&sess,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_ENCRYPT,key,sizeof(key),iv,sizeof(iv));
 	if(result!=TEE_SUCCESS) goto out1;
+	DMSG("aesInit ok");
+
+	result = TEE_CipherUpdate(sess.operHandle,input,sizeof(input),output,&outputSize);
+	if(result!=TEE_SUCCESS) goto out2;
+	DMSG("CipherUpdate outSize=%u",outputSize);
 	DMSG("encoding ok");
 
 	if(memcmp(input,output,sizeof(input))==0)
@@ -277,22 +333,8 @@ static TEE_Result ta_key_cmd_test(uint32_t param_types, TEE_Param params[4])
 	else
 		DMSG("After encoding input!=ouput");
 
-	char decOut[1024]={4,};
-	uint32_t decOutSize = sizeof(decOut);
-	result = aes(false,key,sizeof(key),iv,sizeof(iv),output,outputSize,decOut,&decOutSize);
-	if(result!=TEE_SUCCESS) goto out1;
-	DMSG("decoding ok");
-
-	if(memcmp(decOut,output,sizeof(output))==0)
-		DMSG("After decoding decOut==output");
-	else
-		DMSG("After decoding decOut!=output");
-
-	if(memcmp(decOut,input,sizeof(output))==0)
-		DMSG("compare decOut==input");
-	else
-		DMSG("compare decOut!=input");
-
+out2:
+	TEE_FreeOperation(sess.operHandle);
 out1:
 	DMSG("End test");
 	return result;
