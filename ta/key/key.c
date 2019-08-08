@@ -317,13 +317,13 @@ static TEE_Result ta_key_cmd_test(uint32_t param_types, TEE_Param params[4])
 	char input[1024]={2,};
 	char output[1024]={3,};
 	uint32_t outputSize = sizeof(output);
-	aesCipher sess;
+	aesCipher encSess;
 
-	result = aesInit(&sess,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_ENCRYPT,key,sizeof(key),iv,sizeof(iv));
+	result = aesInit(&encSess,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_ENCRYPT,key,sizeof(key),iv,sizeof(iv));
 	if(result!=TEE_SUCCESS) goto out1;
 	DMSG("aesInit ok");
 
-	result = TEE_CipherUpdate(sess.operHandle,input,sizeof(input),output,&outputSize);
+	result = TEE_CipherUpdate(encSess.operHandle,input,sizeof(input),output,&outputSize);
 	if(result!=TEE_SUCCESS) goto out2;
 	DMSG("CipherUpdate outSize=%u",outputSize);
 	DMSG("encoding ok");
@@ -334,7 +334,7 @@ static TEE_Result ta_key_cmd_test(uint32_t param_types, TEE_Param params[4])
 		DMSG("After encoding input!=ouput");
 
 out2:
-	TEE_FreeOperation(sess.operHandle);
+	TEE_FreeOperation(encSess.operHandle);
 out1:
 	DMSG("End test");
 	return result;
