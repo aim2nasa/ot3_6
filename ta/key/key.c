@@ -383,3 +383,39 @@ static TEE_Result ta_key_cmd_alloc_operation(uint32_t param_types, TEE_Param par
 
 	return allocOperation(&aesSess,params[0].value.a,params[0].value.b,params[1].value.a);
 }
+
+static TEE_Result setKey(aesCipher *sess,char *key,uint32_t keySize)
+{
+	TEE_Result result = TEE_ERROR_GENERIC;
+
+	DMSG("setKey start");
+	if(sess->keySize!=keySize) {
+		result = TEE_ERROR_BAD_PARAMETERS;
+		goto out1;
+	} 
+
+	TEE_ObjectHandle keyHandle;
+	result = TEE_AllocateTransientObject(TEE_TYPE_AES,sess->keySize*8,&keyHandle);
+	if(result!=TEE_SUCCESS) goto out1;
+	DMSG("Allocate Key ObjectHandle=%p",keyHandle);
+
+	TEE_Attribute keyAttr;
+	keyAttr.attributeID = TEE_ATTR_SECRET_VALUE;
+	keyAttr.content.ref.buffer = (void*)key;
+	keyAttr.content.ref.length = keySize;
+
+	result = TEE_PopulateTransientObject(keyHandle,&keyAttr,1);
+	if(result!=TEE_SUCCESS) goto out2;
+	DMSG("PopulateTransientObject key objectHandle=%p with keyAttribute=0x%x",keyHandle,keyAttr.attributeID);
+
+	result = TEE_SetOperationKey(sess->operHandle,keyHandle);
+	if(result!=TEE_SUCCESS) goto out2;
+	DMSG("SetOperationKey operationHandle=%p, key ObjectHandle=%p",sess->operHandle,keyHandle);
+
+out2:
+	TEE_FreeTransientObject(keyHandle);
+	DMSG("Free Key ObjectHandle=%p",keyHandle);
+out1:
+	DMSG("setKey end with error code=0x%x",result);
+	return result;
+}
