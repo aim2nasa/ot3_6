@@ -356,3 +356,29 @@ out1:
 	DMSG("End test");
 	return result;
 }
+
+static TEE_Result allocOperation(aesCipher *sess,uint32_t algo,uint32_t mod,uint32_t keySize)
+{
+	TEE_Result result = TEE_ERROR_GENERIC;
+
+	if(sess->operHandle!=TEE_HANDLE_NULL) TEE_FreeOperation(sess->operHandle);
+
+	if((result=algorithm(&sess->algo,algo))!=TEE_SUCCESS) goto out1;
+	if((result=mode(&sess->mode,mod))!=TEE_SUCCESS) goto out1;
+	if((result=aesKeySizeInByte(&sess->keySize,keySize))!=TEE_SUCCESS) goto out1;
+
+	result = TEE_AllocateOperation(&sess->operHandle,sess->algo,sess->mode,sess->keySize*8);
+	if(result!=TEE_SUCCESS) goto out1;
+	DMSG("aesCipher OperationHandle=%p",aesSess.operHandle);
+
+out1:
+	return result;
+}
+
+static TEE_Result ta_key_cmd_alloc_operation(uint32_t param_types, TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT,TEE_PARAM_TYPE_VALUE_INPUT,
+									  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
+
+	return allocOperation(&aesSess,params[0].value.a,params[0].value.b,params[1].value.a);
+}
