@@ -204,13 +204,6 @@ static TEE_Result ta_key_cmd_get_object_value_attribute(uint32_t param_types,TEE
 	return TEE_GetObjectValueAttribute(o,params[0].value.b,&params[1].value.a,&params[1].value.b);
 }
 
-typedef struct _aesCipher{
-	uint32_t algo;						//Algorithm
-	uint32_t mode;						//Encode or Decode
-	uint32_t keySize;					//AES key size in byte
-	TEE_OperationHandle operHandle;		//AES ciphering operation
-}aesCipher;
-
 static TEE_Result algorithm(uint32_t *supAlgo,uint32_t askAlgo)
 {
 	switch(askAlgo){

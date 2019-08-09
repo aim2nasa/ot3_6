@@ -7,11 +7,19 @@
 #include <string.h>
 #include <ta_storage.h>
 
-#include "key.c"
-#include "enum.c"
+typedef struct _aesCipher{
+	uint32_t algo;                      //Algorithm
+	uint32_t mode;                      //Encode or Decode
+	uint32_t keySize;                   //AES key size in byte
+	TEE_OperationHandle operHandle;     //AES ciphering operation
+}aesCipher;
 
+static aesCipher aesSess;
 static TEE_UUID stor_uuid = TA_STORAGE_UUID;
 static TEE_TASessionHandle stor_session = TEE_HANDLE_NULL;
+
+#include "key.c"
+#include "enum.c"
 
 /*
  * Trusted Application Entry Points
@@ -44,6 +52,8 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t nParamTypes,
 	(void)nParamTypes;
 	(void)pParams;
 	(void)ppSessionContext;
+
+	aesSess.operHandle = TEE_HANDLE_NULL;
 
 	res = TEE_OpenTASession(&stor_uuid,0,types,params,&stor_session,&origin);
 	DMSG("TEE_OpenTASession=0x%x",res);
