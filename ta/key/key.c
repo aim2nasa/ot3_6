@@ -302,6 +302,7 @@ static TEE_Result ta_key_cmd_test(uint32_t param_types, TEE_Param params[4])
 {
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES(TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE,
 									  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
+	(void)params;
 	DMSG("Start test");
 	TEE_Result result = TEE_ERROR_GENERIC;
 
