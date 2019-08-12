@@ -116,6 +116,24 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 	case TA_KEY_CMD_GET_OBJECT_VALUE_ATTRIBUTE:
 		IMSG("TA_KEY_CMD_GET_OBJECT_VALUE_ATTRIBUTE command");
 		return ta_key_cmd_get_object_value_attribute(nParamTypes, pParams);
+	case TA_KEY_CMD_ALLOC_OPERATION:
+		IMSG("TA_KEY_CMD_ALLOC_OPERATION command");
+		return ta_key_cmd_alloc_operation(nParamTypes, pParams);
+	case TA_KEY_CMD_DEALLOC_OPERATION:
+		IMSG("TA_KEY_CMD_DEALLOC_OPERATION command");
+		return ta_key_cmd_dealloc_operation(nParamTypes, pParams);
+	case TA_KEY_CMD_SET_KEY:
+		IMSG("TA_KEY_CMD_SET_KEY command");
+		return ta_key_cmd_set_key(nParamTypes, pParams);
+	case TA_KEY_CMD_CIPHER_INIT:
+		IMSG("TA_KEY_CMD_CIPHER_INIT command");
+		return ta_key_cmd_cipher_init(nParamTypes, pParams);
+	case TA_KEY_CMD_CIPHER_UPDATE:
+		IMSG("TA_KEY_CMD_CIPHER_UPDATE command");
+		return ta_key_cmd_cipher_update(nParamTypes, pParams);
+	case TA_KEY_CMD_CIPHER_DO_FINAL:
+		IMSG("TA_KEY_CMD_CIPHER_DO_FINAL command");
+		return ta_key_cmd_cipher_do_final(nParamTypes, pParams);
 	default:
 		IMSG("TEE_ERROR_BAD_PARAMETERS");
 		return TEE_ERROR_BAD_PARAMETERS;
