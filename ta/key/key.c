@@ -443,16 +443,11 @@ static TEE_Result ta_key_cmd_set_key(uint32_t param_types, TEE_Param params[4])
 	return setKey(&aesSess,params[0].memref.buffer,params[0].memref.size);
 }
 
-static TEE_Result setIV(aesCipher *sess,char *iv,uint32_t ivSize)
-{
-	TEE_CipherInit(sess->operHandle,iv,ivSize);
-	return TEE_SUCCESS;
-}
-
-static TEE_Result ta_key_cmd_set_iv(uint32_t param_types, TEE_Param params[4])
+static TEE_Result ta_key_cmd_cipher_init(uint32_t param_types, TEE_Param params[4])
 {
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES(TEE_PARAM_TYPE_MEMREF_INPUT,TEE_PARAM_TYPE_NONE,
 									  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
 
-	return setIV(&aesSess,params[0].memref.buffer,params[0].memref.size);
+	TEE_CipherInit(&aesSess,params[0].memref.buffer,params[0].memref.size);
+	return TEE_SUCCESS;
 }
