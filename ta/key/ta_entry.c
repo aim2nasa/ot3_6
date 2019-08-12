@@ -109,6 +109,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 	case TA_KEY_CMD_FREE_OPER:
 		IMSG("TA_KEY_CMD_FREE_OPER command");
 		return ta_key_cmd_free_oper(nParamTypes, pParams);
+	case TA_KEY_CMD_SET_KEY_OPER:
+		IMSG("TA_KEY_CMD_SET_KEY_OPER command");
+		return ta_key_cmd_set_key_oper(nParamTypes, pParams);
 	default:
 		IMSG("TEE_ERROR_NOT_SUPPORTED");
 		return TEE_ERROR_NOT_SUPPORTED;

@@ -52,6 +52,7 @@ extern "C" {
 
 	TEEC_Result keyAllocOper(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,OperHandle *operHandle);
 	TEEC_Result keyFreeOper(oc *o,OperHandle operHandle);
+	TEEC_Result keySetKeyOper(oc *o,OperHandle operHandle,uint32_t keyObj);
 
 #ifdef __cplusplus
 }

@@ -20,5 +20,6 @@
 #define TA_KEY_CMD_GET_OBJECT_VALUE_ATTRIBUTE	12
 #define TA_KEY_CMD_ALLOC_OPER					13
 #define TA_KEY_CMD_FREE_OPER					14
+#define TA_KEY_CMD_SET_KEY_OPER					15
 
 #endif /*TA_KEY_H */

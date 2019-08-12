@@ -160,6 +160,8 @@ TEST(Key, encDec) {
 	ASSERT_EQ(keyAllocOper(&o,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_ENCRYPT,keyObj,&operHandle),TEEC_SUCCESS);
 	std::cout<<"operHandle:"<<std::hex<<operHandle<<std::endl;
 	ASSERT_NE(operHandle,(void*)TEE_HANDLE_NULL);
+	ASSERT_EQ(keySetKeyOper(&o,operHandle,keyObj),TEEC_SUCCESS);
+
 	ASSERT_EQ(keyFreeOper(&o,operHandle),TEEC_SUCCESS);
 
 	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);

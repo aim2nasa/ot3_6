@@ -235,3 +235,16 @@ static TEE_Result ta_key_cmd_free_oper(uint32_t param_types, TEE_Param params[4]
 	TEE_FreeOperation(op);
 	return TEE_SUCCESS;
 }
+
+static TEE_Result ta_key_cmd_set_key_oper(uint32_t param_types, TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_NONE,
+			   TEE_PARAM_TYPE_NONE, TEE_PARAM_TYPE_NONE));
+
+	TEE_OperationHandle op = VAL2HANDLE(params[0].value.a);
+	TEE_ObjectHandle key = VAL2HANDLE(params[0].value.b);
+
+	DMSG("operation(%p) is given with key(0x%x)",(void*)(uintptr_t)params[0].value.a,params[0].value.b);
+	return TEE_SetOperationKey(op,key);
+}
