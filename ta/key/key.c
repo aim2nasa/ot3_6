@@ -384,6 +384,21 @@ static TEE_Result ta_key_cmd_alloc_operation(uint32_t param_types, TEE_Param par
 	return allocOperation(&aesSess,params[0].value.a,params[0].value.b,params[1].value.a);
 }
 
+static TEE_Result deallocOperation(aesCipher *sess)
+{
+	TEE_FreeOperation(sess->operHandle);
+	sess->operHandle = TEE_HANDLE_NULL;
+	return TEE_SUCCESS;
+}
+
+static TEE_Result ta_key_cmd_dealloc_operation(uint32_t param_types, TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES(TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE,
+									  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
+	(void)params;
+	return deallocOperation(&aesSess);
+}
+
 static TEE_Result setKey(aesCipher *sess,char *key,uint32_t keySize)
 {
 	TEE_Result result = TEE_ERROR_GENERIC;
