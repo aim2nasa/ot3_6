@@ -419,3 +419,11 @@ out1:
 	DMSG("setKey end with error code=0x%x",result);
 	return result;
 }
+
+static TEE_Result ta_key_cmd_set_key(uint32_t param_types, TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES(TEE_PARAM_TYPE_MEMREF_INPUT,TEE_PARAM_TYPE_NONE,
+									  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
+
+	return setKey(&aesSess,params[0].memref.buffer,params[0].memref.size);
+}
