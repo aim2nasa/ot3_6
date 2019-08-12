@@ -276,6 +276,16 @@ TEEC_Result keyDeallocOperation(oc *o)
 	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_DEALLOC_OPERATION,&op,&o->error);
 }
 
+TEEC_Result keySetKey(oc *o, char *key,uint32_t keySize)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].tmpref.buffer = key;
+	op.params[0].tmpref.size = keySize;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
+	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_SET_KEY,&op,&o->error);
+}
+
 TEEC_Result keyTest(oc *o)
 {
 	TEEC_Result res = TEEC_ERROR_GENERIC;
