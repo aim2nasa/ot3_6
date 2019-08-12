@@ -104,7 +104,7 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 		IMSG("TA_KEY_CMD_GET_OBJECT_VALUE_ATTRIBUTE command");
 		return ta_key_cmd_get_object_value_attribute(nParamTypes, pParams);
 	default:
-		IMSG("TEE_ERROR_BAD_PARAMETERS");
-		return TEE_ERROR_BAD_PARAMETERS;
+		IMSG("TEE_ERROR_NOT_SUPPORTED");
+		return TEE_ERROR_NOT_SUPPORTED;
 	}
 }
