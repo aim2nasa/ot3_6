@@ -167,13 +167,31 @@ TEST(Key, encDec) {
 	ASSERT_EQ(sizeof(iv),16);
 	ASSERT_EQ(keyCipherInit(&o,operHandle,iv,sizeof(iv)),TEEC_SUCCESS);
 
-	char plain[TEE_AES_BLOCK_SIZE]={1,};
+	char plain[TEE_AES_BLOCK_SIZE+5]={1,};	//intetionally larger by +5
 	char encoded[TEE_AES_BLOCK_SIZE*2]={0,};
 	size_t encodedSize = sizeof(encoded);
 	ASSERT_EQ(encodedSize,32);
 
-	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain,sizeof(plain),encoded,&encodedSize),TEEC_SUCCESS);
-	ASSERT_EQ(encodedSize,16);
+	//note: sizeof(plain)=21 sizeof(plain)/2 = 10
+	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain,sizeof(plain)/2,encoded,&encodedSize),TEEC_SUCCESS);
+	ASSERT_EQ(encodedSize,0);	//accumulated 10, less than 16
+
+	encodedSize = sizeof(encoded); 
+	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain,sizeof(plain)/2,encoded,&encodedSize),TEEC_SUCCESS);
+	ASSERT_EQ(encodedSize,16);	//accumuated 10+10-16=4
+
+	encodedSize = sizeof(encoded); 
+	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain,sizeof(plain)/2,encoded,&encodedSize),TEEC_SUCCESS);
+	ASSERT_EQ(encodedSize,0);	//accumulated 4+10=14, less then 16
+
+	encodedSize = sizeof(encoded); 
+	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain,sizeof(plain)/2,encoded,&encodedSize),TEEC_SUCCESS);
+	ASSERT_EQ(encodedSize,16);	//accumulated 14+10-16=8
+
+	encodedSize = sizeof(encoded); 
+	ASSERT_EQ(keyCipherDoFinal(&o,operHandle,plain,8,encoded,&encodedSize),TEEC_SUCCESS);
+	ASSERT_EQ(encodedSize,16);	//accumulated 8+8=16-16=0
+
 	ASSERT_EQ(keyFreeOper(&o,operHandle),TEEC_SUCCESS);
 
 	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);

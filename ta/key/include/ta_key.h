@@ -23,5 +23,6 @@
 #define TA_KEY_CMD_SET_KEY_OPER					15
 #define TA_KEY_CMD_CIPHER_INIT					16
 #define TA_KEY_CMD_CIPHER_UPDATE				17
+#define TA_KEY_CMD_CIPHER_DO_FINAL				18
 
 #endif /*TA_KEY_H */

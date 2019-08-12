@@ -57,6 +57,7 @@ extern "C" {
 	TEEC_Result keySetKeyOper(oc *o,OperHandle operHandle,uint32_t keyObj);
 	TEEC_Result keyCipherInit(oc *o,OperHandle operHandle,const void* iv,uint32_t ivLen);
 	TEEC_Result keyCipherUpdate(oc *o,OperHandle operHandle,const void *src,size_t srcLen,void *dst,size_t *dstLen);
+	TEEC_Result keyCipherDoFinal(oc *o,OperHandle operHandle,const void *src,size_t srcLen,void *dst,size_t *dstLen);
 
 #ifdef __cplusplus
 }

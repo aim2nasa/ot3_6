@@ -325,3 +325,9 @@ TEEC_Result keyCipherUpdate(oc *o,OperHandle operHandle,const void *src,size_t s
 {
 	return doCipher(TA_KEY_CMD_CIPHER_UPDATE,o,operHandle,src,srcLen,dst,dstLen);
 }
+
+TEEC_Result keyCipherDoFinal(oc *o,OperHandle operHandle,const void *src,size_t srcLen,
+							void *dst,size_t *dstLen)
+{
+	return doCipher(TA_KEY_CMD_CIPHER_DO_FINAL,o,operHandle,src,srcLen,dst,dstLen);
+}
