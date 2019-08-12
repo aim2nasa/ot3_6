@@ -30,6 +30,8 @@ extern "C" {
 		struct _enum_object_list *next;
 	} eObjList;
 
+	typedef void* OperHandle;
+
 	TEEC_Result keyGenerate(oc *o,storageId sid,const char *keyFileName,uint32_t flags,uint32_t keySize,uint32_t *keyObj);
 	TEEC_Result keyList(oc *o,storageId sid);
 	TEEC_Result keyOpen(oc *o,storageId sid,const char *keyFileName,uint32_t flags,uint32_t *keyObj);
@@ -47,6 +49,9 @@ extern "C" {
 							 size_t *info_size, void *id, uint32_t *id_size);
 	TEEC_Result keyEnumObjectList(oc *o,storageId sid,eObjList **list,size_t *listSize);
 	size_t keyFreeEnumObjectList(eObjList **list);
+
+	TEEC_Result keyAllocOper(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,OperHandle *operHandle);
+	TEEC_Result keyFreeOper(oc *o,OperHandle operHandle);
 
 #ifdef __cplusplus
 }

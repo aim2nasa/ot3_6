@@ -203,3 +203,35 @@ static TEE_Result ta_key_cmd_get_object_value_attribute(uint32_t param_types,TEE
 	TEE_ObjectHandle o = VAL2HANDLE(params[0].value.a);
 	return TEE_GetObjectValueAttribute(o,params[0].value.b,&params[1].value.a,&params[1].value.b);
 }
+
+static TEE_Result ta_key_cmd_alloc_oper(uint32_t param_types, TEE_Param params[4])
+{
+	TEE_Result res;
+	TEE_OperationHandle op = TEE_HANDLE_NULL;
+	TEE_ObjectInfo keyInfo;
+
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_OUTPUT, TEE_PARAM_TYPE_VALUE_INPUT,
+			   TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_NONE));
+
+	TEE_GetObjectInfo1(VAL2HANDLE(params[2].value.a),&keyInfo);
+	DMSG("GetObjectInfo1,keyInfo.maxObjectSize: %d",keyInfo.maxObjectSize);
+
+	res = TEE_AllocateOperation(&op,params[1].value.a,params[1].value.b,keyInfo.maxObjectSize);
+	params[0].value.a = (uintptr_t)op;
+	DMSG("allocate operation(%p) with key(%d bits)",(void*)(uintptr_t)params[0].value.a,keyInfo.maxObjectSize);
+	return res;
+}
+
+static TEE_Result ta_key_cmd_free_oper(uint32_t param_types, TEE_Param params[4])
+{
+	TEE_OperationHandle op = VAL2HANDLE(params[0].value.a);
+
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_NONE,
+			   TEE_PARAM_TYPE_NONE, TEE_PARAM_TYPE_NONE));
+
+	DMSG("Freeing operation(%p)",(void*)(uintptr_t)params[0].value.a);
+	TEE_FreeOperation(op);
+	return TEE_SUCCESS;
+}

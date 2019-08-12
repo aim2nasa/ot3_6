@@ -139,3 +139,29 @@ TEST(Key, getObjectBufferAttribute) {
 	closeSession(&o);
 	finalizeContext(&o);
 }
+
+TEST(Key, encDec) {
+	oc o;
+	TEEC_UUID uuid = TA_KEY_UUID;
+	ASSERT_EQ(initializeContext(NULL,&o),TEEC_SUCCESS);
+	ASSERT_EQ(openSession(&o,&uuid,TEEC_LOGIN_PUBLIC,NULL,NULL),TEEC_SUCCESS);
+
+	uint32_t flags = TEE_DATA_FLAG_ACCESS_WRITE_META	|
+					 TEE_DATA_FLAG_ACCESS_READ			|
+					 TEE_DATA_FLAG_SHARE_READ			|
+					 TEE_DATA_FLAG_ACCESS_WRITE			|
+					 TEE_DATA_FLAG_SHARE_WRITE;
+
+	uint32_t keyObj = 0;
+	ASSERT_EQ(keyGenerate(&o,PRIVATE,"encDecTest",flags,256,&keyObj),TEEC_SUCCESS);
+	ASSERT_NE(keyObj,0);
+
+	OperHandle operHandle = TEE_HANDLE_NULL;
+	ASSERT_EQ(keyAllocOper(&o,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_ENCRYPT,keyObj,&operHandle),TEEC_SUCCESS);
+	std::cout<<"operHandle:"<<std::hex<<operHandle<<std::endl;
+	ASSERT_EQ(keyFreeOper(&o,operHandle),TEEC_SUCCESS);
+
+	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);
+	closeSession(&o);
+	finalizeContext(&o);
+}

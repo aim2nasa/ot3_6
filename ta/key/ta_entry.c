@@ -103,6 +103,12 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 	case TA_KEY_CMD_GET_OBJECT_VALUE_ATTRIBUTE:
 		IMSG("TA_KEY_CMD_GET_OBJECT_VALUE_ATTRIBUTE command");
 		return ta_key_cmd_get_object_value_attribute(nParamTypes, pParams);
+	case TA_KEY_CMD_ALLOC_OPER:
+		IMSG("TA_KEY_CMD_ALLOC_OPER command");
+		return ta_key_cmd_alloc_oper(nParamTypes, pParams);
+	case TA_KEY_CMD_FREE_OPER:
+		IMSG("TA_KEY_CMD_FREE_OPER command");
+		return ta_key_cmd_free_oper(nParamTypes, pParams);
 	default:
 		IMSG("TEE_ERROR_NOT_SUPPORTED");
 		return TEE_ERROR_NOT_SUPPORTED;

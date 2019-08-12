@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define VAL2HANDLE(v) (void*)(uintptr_t)(v)
+
 TEEC_Result keyGenerate(oc *o,storageId sid,const char *keyFileName,uint32_t flags,uint32_t keySize,uint32_t *keyObj)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
@@ -254,4 +256,28 @@ TEEC_Result keyGetObjectValueAttribute(oc *o,uint32_t keyObj,uint32_t attrId,uin
 		*valueB = op.params[1].value.b;
 	}
 	return res;
+}
+
+TEEC_Result keyAllocOper(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,OperHandle *operHandle)
+{
+	TEEC_Result res;
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[1].value.a = algo;
+	op.params[1].value.b = mode;
+	op.params[2].value.a = keyObj;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_OUTPUT,TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_NONE);
+
+	res = TEEC_InvokeCommand(o->session,TA_KEY_CMD_ALLOC_OPER,&op,&o->error);
+	if(res==TEEC_SUCCESS) *operHandle = VAL2HANDLE(op.params[0].value.a);
+	return res;
+}
+
+TEEC_Result keyFreeOper(oc *o,OperHandle operHandle)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = (uintptr_t)operHandle;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
+	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_FREE_OPER,&op,&o->error);
 }
