@@ -322,6 +322,11 @@ TEEC_Result keyCipherUpdate(oc *o,const void *src, size_t srcLen,void *dst, size
 	return keyCipherDo(TA_KEY_CMD_CIPHER_UPDATE,o,src,srcLen,dst,dstLen);
 }
 
+TEEC_Result keyCipherDoFinal(oc *o,const void *src, size_t srcLen,void *dst, size_t *dstLen)
+{
+	return keyCipherDo(TA_KEY_CMD_CIPHER_DO_FINAL,o,src,srcLen,dst,dstLen);
+}
+
 TEEC_Result keyTest(oc *o)
 {
 	TEEC_Result res = TEEC_ERROR_GENERIC;
