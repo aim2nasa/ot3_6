@@ -296,7 +296,7 @@ TEEC_Result keyCipherInit(oc *o, char *iv,uint32_t ivSize)
 	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_CIPHER_INIT,&op,&o->error);
 }
 
-TEEC_Result keyCipherUpdate(oc *o,const void *src, size_t src_len,void *dst, size_t *dst_len)
+TEEC_Result keyCipherDo(uint32_t commandID,oc *o,const void *src, size_t src_len,void *dst, size_t *dst_len)
 {
 	TEEC_Result res = TEEC_ERROR_GENERIC;
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
@@ -310,11 +310,16 @@ TEEC_Result keyCipherUpdate(oc *o,const void *src, size_t src_len,void *dst, siz
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_INPUT,TEEC_MEMREF_TEMP_OUTPUT,
 									 TEEC_NONE,TEEC_NONE);
 
-	res = TEEC_InvokeCommand(o->session, TA_KEY_CMD_CIPHER_UPDATE, &op, &org);
+	res = TEEC_InvokeCommand(o->session,commandID,&op,&org);
 	if (res == TEEC_SUCCESS)
 		*dst_len = op.params[1].tmpref.size;
 
 	return res;
+}
+
+TEEC_Result keyCipherUpdate(oc *o,const void *src, size_t src_len,void *dst, size_t *dst_len)
+{
+	return keyCipherDo(TA_KEY_CMD_CIPHER_UPDATE,o,src,src_len,dst,dst_len);
 }
 
 TEEC_Result keyTest(oc *o)
