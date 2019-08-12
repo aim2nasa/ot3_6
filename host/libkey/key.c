@@ -303,7 +303,7 @@ TEEC_Result keyCipherInit(oc *o,OperHandle operHandle,const void* iv,uint32_t iv
 	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_CIPHER_INIT,&op,&o->error);
 }
 
-TEEC_Result keyCipherUpdate(oc *o,OperHandle operHandle,const void *src,size_t srcLen,
+TEEC_Result doCipher(uint32_t commandID,oc *o,OperHandle operHandle,const void *src,size_t srcLen,
 							void *dst,size_t *dstLen)
 {
 	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
@@ -315,7 +315,13 @@ TEEC_Result keyCipherUpdate(oc *o,OperHandle operHandle,const void *src,size_t s
 	op.params[2].memref.size = *dstLen;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,
 					 TEEC_MEMREF_TEMP_OUTPUT,TEEC_NONE);
-	TEEC_Result res = TEEC_InvokeCommand(o->session,TA_KEY_CMD_CIPHER_UPDATE,&op,&o->error);
+	TEEC_Result res = TEEC_InvokeCommand(o->session,commandID,&op,&o->error);
 	if(res==TEEC_SUCCESS) *dstLen = op.params[2].memref.size;
 	return res;
+}
+
+TEEC_Result keyCipherUpdate(oc *o,OperHandle operHandle,const void *src,size_t srcLen,
+							void *dst,size_t *dstLen)
+{
+	return doCipher(TA_KEY_CMD_CIPHER_UPDATE,o,operHandle,src,srcLen,dst,dstLen);
 }
