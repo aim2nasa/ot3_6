@@ -48,6 +48,9 @@ extern "C" {
 	TEEC_Result keyEnumObjectList(oc *o,storageId sid,eObjList **list,size_t *listSize);
 	size_t keyFreeEnumObjectList(eObjList **list);
 
+	/*Cipher operation*/
+	TEEC_Result keyAllocOperation(oc *o,uint32_t algo,uint32_t mod,uint32_t keySize);
+
 	TEEC_Result keyTest(oc *o);
 
 #ifdef __cplusplus

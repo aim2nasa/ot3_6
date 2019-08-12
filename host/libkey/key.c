@@ -256,6 +256,18 @@ TEEC_Result keyGetObjectValueAttribute(oc *o,uint32_t keyObj,uint32_t attrId,uin
 	return res;
 }
 
+TEEC_Result keyAllocOperation(oc *o,uint32_t algo,uint32_t mod,uint32_t keySize)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = algo;
+	op.params[0].value.b = mod;
+	op.params[1].value.a = keySize;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE);
+
+	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_ALLOC_OPERATION,&op,&o->error);
+}
+
 TEEC_Result keyTest(oc *o)
 {
 	TEEC_Result res = TEEC_ERROR_GENERIC;
