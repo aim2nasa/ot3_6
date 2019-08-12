@@ -448,6 +448,6 @@ static TEE_Result ta_key_cmd_cipher_init(uint32_t param_types, TEE_Param params[
 	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES(TEE_PARAM_TYPE_MEMREF_INPUT,TEE_PARAM_TYPE_NONE,
 									  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
 
-	TEE_CipherInit(&aesSess,params[0].memref.buffer,params[0].memref.size);
+	TEE_CipherInit(aesSess.operHandle,params[0].memref.buffer,params[0].memref.size);
 	return TEE_SUCCESS;
 }
