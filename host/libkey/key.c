@@ -268,6 +268,14 @@ TEEC_Result keyAllocOperation(oc *o,uint32_t algo,uint32_t mod,uint32_t keySize)
 	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_ALLOC_OPERATION,&op,&o->error);
 }
 
+TEEC_Result keyDeallocOperation(oc *o)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_NONE,TEEC_NONE,TEEC_NONE,TEEC_NONE);
+	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_DEALLOC_OPERATION,&op,&o->error);
+}
+
 TEEC_Result keyTest(oc *o)
 {
 	TEEC_Result res = TEEC_ERROR_GENERIC;
