@@ -167,6 +167,13 @@ TEST(Key, encDec) {
 	ASSERT_EQ(sizeof(iv),16);
 	ASSERT_EQ(keyCipherInit(&o,operHandle,iv,sizeof(iv)),TEEC_SUCCESS);
 
+	char plain[TEE_AES_BLOCK_SIZE]={1,};
+	char encoded[TEE_AES_BLOCK_SIZE*2]={0,};
+	size_t encodedSize = sizeof(encoded);
+	ASSERT_EQ(encodedSize,32);
+
+	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain,sizeof(plain),encoded,&encodedSize),TEEC_SUCCESS);
+	ASSERT_EQ(encodedSize,16);
 	ASSERT_EQ(keyFreeOper(&o,operHandle),TEEC_SUCCESS);
 
 	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);

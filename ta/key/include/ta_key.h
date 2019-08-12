@@ -22,5 +22,6 @@
 #define TA_KEY_CMD_FREE_OPER					14
 #define TA_KEY_CMD_SET_KEY_OPER					15
 #define TA_KEY_CMD_CIPHER_INIT					16
+#define TA_KEY_CMD_CIPHER_UPDATE				17
 
 #endif /*TA_KEY_H */
