@@ -460,3 +460,12 @@ static TEE_Result ta_key_cmd_cipher_update(uint32_t param_types, TEE_Param param
 	return TEE_CipherUpdate(aesSess.operHandle,params[0].memref.buffer,params[0].memref.size,
 											   params[1].memref.buffer,&params[1].memref.size);
 }
+
+static TEE_Result ta_key_cmd_cipher_do_final(uint32_t param_types, TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES(TEE_PARAM_TYPE_MEMREF_INPUT,TEE_PARAM_TYPE_MEMREF_OUTPUT,
+									  TEE_PARAM_TYPE_NONE,TEE_PARAM_TYPE_NONE));
+
+	return TEE_CipherDoFinal(aesSess.operHandle,params[0].memref.buffer,params[0].memref.size,
+											    params[1].memref.buffer,&params[1].memref.size);
+}
