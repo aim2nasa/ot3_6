@@ -53,7 +53,7 @@ extern "C" {
 	TEEC_Result keyDeallocOperation(oc *o);
 	TEEC_Result keySetKey(oc *o, char *key,uint32_t keySize);
 	TEEC_Result keyCipherInit(oc *o, char *iv,uint32_t ivSize);
-	TEEC_Result keyCipherUpdate(oc *o,const void *src, size_t src_len,void *dst, size_t *dst_len);
+	TEEC_Result keyCipherUpdate(oc *o,const void *src, size_t srcLen,void *dst, size_t *dstLen);
 
 	TEEC_Result keyTest(oc *o);
 
