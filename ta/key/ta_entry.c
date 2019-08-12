@@ -9,6 +9,7 @@
 
 #include "key.c"
 #include "enum.c"
+#include "cipher.c"
 
 static TEE_UUID stor_uuid = TA_STORAGE_UUID;
 static TEE_TASessionHandle stor_session = TEE_HANDLE_NULL;
@@ -112,6 +113,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 	case TA_KEY_CMD_SET_KEY_OPER:
 		IMSG("TA_KEY_CMD_SET_KEY_OPER command");
 		return ta_key_cmd_set_key_oper(nParamTypes, pParams);
+	case TA_KEY_CMD_CIPHER_INIT:
+		IMSG("TA_KEY_CMD_CIPHER_INIT command");
+		return ta_key_cmd_cipher_init(nParamTypes, pParams);
 	default:
 		IMSG("TEE_ERROR_NOT_SUPPORTED");
 		return TEE_ERROR_NOT_SUPPORTED;

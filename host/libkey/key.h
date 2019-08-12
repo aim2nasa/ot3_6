@@ -10,6 +10,8 @@
 #define TEE_STORAGE_PRIVATE_REE			0x80000000
 #define TEE_STORAGE_PRIVATE_RPMB		0x80000100
 
+#define TEE_AES_BLOCK_SIZE				16UL
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -53,6 +55,7 @@ extern "C" {
 	TEEC_Result keyAllocOper(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,OperHandle *operHandle);
 	TEEC_Result keyFreeOper(oc *o,OperHandle operHandle);
 	TEEC_Result keySetKeyOper(oc *o,OperHandle operHandle,uint32_t keyObj);
+	TEEC_Result keyCipherInit(oc *o,OperHandle operHandle,const void* iv,uint32_t ivLen);
 
 #ifdef __cplusplus
 }

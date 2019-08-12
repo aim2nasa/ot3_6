@@ -291,3 +291,14 @@ TEEC_Result keySetKeyOper(oc *o,OperHandle operHandle,uint32_t keyObj)
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_NONE,TEEC_NONE,TEEC_NONE);
 	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_SET_KEY_OPER,&op,&o->error);
 }
+
+TEEC_Result keyCipherInit(oc *o,OperHandle operHandle,const void* iv,uint32_t ivLen)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = (uintptr_t)operHandle;
+	op.params[1].tmpref.buffer = (void*)iv;
+	op.params[1].tmpref.size = ivLen;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
+	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_CIPHER_INIT,&op,&o->error);
+}

@@ -162,6 +162,11 @@ TEST(Key, encDec) {
 	ASSERT_NE(operHandle,(void*)TEE_HANDLE_NULL);
 	ASSERT_EQ(keySetKeyOper(&o,operHandle,keyObj),TEEC_SUCCESS);
 
+	char iv[TEE_AES_BLOCK_SIZE]={1,};	//all elements of value 1
+	ASSERT_EQ(TEE_AES_BLOCK_SIZE,16);
+	ASSERT_EQ(sizeof(iv),16);
+	ASSERT_EQ(keyCipherInit(&o,operHandle,iv,sizeof(iv)),TEEC_SUCCESS);
+
 	ASSERT_EQ(keyFreeOper(&o,operHandle),TEEC_SUCCESS);
 
 	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);
