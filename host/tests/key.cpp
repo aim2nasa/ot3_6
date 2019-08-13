@@ -213,6 +213,14 @@ TEST(Key, encDec) {
 	cipherTest(&o,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_ENCRYPT,keyObj,NULL,0,
 				plain,sizeof(plain),encoded,sizeof(encoded));
 
+	char decoded[TEE_AES_BLOCK_SIZE*3]={0,};
+	ASSERT_EQ(sizeof(decoded),16*3);
+
+	cipherTest(&o,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_DECRYPT,keyObj,NULL,0,
+				encoded,sizeof(encoded),decoded,sizeof(decoded));
+
+	ASSERT_EQ(memcmp(plain,decoded,sizeof(plain)),0);
+
 	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);
 	closeSession(&o);
 	finalizeContext(&o);
