@@ -209,12 +209,11 @@ TEST(Key, encDec) {
 	char encoded[TEE_AES_BLOCK_SIZE*3]={0,};
 	ASSERT_EQ(sizeof(encoded),16*3);
 	ASSERT_EQ(sizeof(encoded),sizeof(plain));
+	char decoded[TEE_AES_BLOCK_SIZE*3]={0,};
+	ASSERT_EQ(sizeof(decoded),16*3);
 
 	cipherTest(&o,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_ENCRYPT,keyObj,NULL,0,
 				plain,sizeof(plain),encoded,sizeof(encoded));
-
-	char decoded[TEE_AES_BLOCK_SIZE*3]={0,};
-	ASSERT_EQ(sizeof(decoded),16*3);
 
 	cipherTest(&o,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_DECRYPT,keyObj,NULL,0,
 				encoded,sizeof(encoded),decoded,sizeof(decoded));
