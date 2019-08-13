@@ -140,6 +140,53 @@ TEST(Key, getObjectBufferAttribute) {
 	finalizeContext(&o);
 }
 
+void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const void *iv,size_t ivLen,
+				const void *inpBuf,size_t inpBufLen,void *outBuf,size_t outBufLen)
+{
+	OperHandle operHandle = TEE_HANDLE_NULL;
+	ASSERT_EQ(keyAllocOper(o,algo,mode,keyObj,&operHandle),TEEC_SUCCESS);
+	ASSERT_NE(operHandle,(void*)TEE_HANDLE_NULL);
+	ASSERT_EQ(keySetKeyOper(o,operHandle,keyObj),TEEC_SUCCESS);
+
+	ASSERT_EQ(keyCipherInit(o,operHandle,iv,ivLen),TEEC_SUCCESS);
+
+	size_t outSize = outBufLen;
+	int nOffset = 0;
+	ASSERT_EQ(outSize,outBufLen);
+	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
+	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nOffset,10,(char*)outBuf+nOffset,&outSize),TEEC_SUCCESS);
+	ASSERT_EQ(outSize,0);	//accumulated 10, less than 16
+
+	nOffset += 10;	//previous input buffer size
+	outSize = outBufLen;
+	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
+	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nOffset,10,(char*)outBuf+nOffset,&outSize),TEEC_SUCCESS);
+	ASSERT_EQ(outSize,16);	//accumuated 10+10-16=4
+
+	nOffset += 10;	//previous input buffer size
+	outSize = outBufLen-16;//16 bytes written so far
+	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
+	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nOffset,10,(char*)outBuf+nOffset,&outSize),TEEC_SUCCESS);
+	ASSERT_EQ(outSize,0);	//accumulated 4+10=14, less then 16
+
+	nOffset += 10;	//previous input buffer size
+	outSize = outBufLen-16;//16 bytes written so far
+	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
+	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nOffset,10,(char*)outBuf+nOffset,&outSize),TEEC_SUCCESS);
+	ASSERT_EQ(outSize,16);	//accumulated 14+10-16=8
+
+	nOffset += 10;	//previous input buffer size
+	outSize = outBufLen-32;//32 bytes written so far
+	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
+	ASSERT_EQ(keyCipherDoFinal(o,operHandle,(char*)inpBuf+nOffset,8,(char*)outBuf+nOffset,&outSize),TEEC_SUCCESS);
+	ASSERT_EQ(outSize,16);	//accumulated 8+8=16-16=0
+
+	nOffset += 8;	//previous input buffer size
+	ASSERT_EQ(nOffset,16*3);
+
+	ASSERT_EQ(keyFreeOper(o,operHandle),TEEC_SUCCESS);
+}
+
 TEST(Key, encDec) {
 	oc o;
 	TEEC_UUID uuid = TA_KEY_UUID;
@@ -163,44 +210,8 @@ TEST(Key, encDec) {
 	ASSERT_EQ(sizeof(encoded),16*3);
 	ASSERT_EQ(sizeof(encoded),sizeof(plain));
 
-	{
-		OperHandle operHandle = TEE_HANDLE_NULL;
-		ASSERT_EQ(keyAllocOper(&o,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_ENCRYPT,keyObj,&operHandle),TEEC_SUCCESS);
-		ASSERT_NE(operHandle,(void*)TEE_HANDLE_NULL);
-		ASSERT_EQ(keySetKeyOper(&o,operHandle,keyObj),TEEC_SUCCESS);
-
-		ASSERT_EQ(keyCipherInit(&o,operHandle,NULL,0),TEEC_SUCCESS); //TEE_ALG_AES_ECB_NOPAD does not require IV
-
-		size_t encodedSize = sizeof(encoded);
-		int nOffset = 0;
-		ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain+nOffset,10,encoded+nOffset,&encodedSize),TEEC_SUCCESS);
-		ASSERT_EQ(encodedSize,0);	//accumulated 10, less than 16
-
-		nOffset += 10;	//previous input buffer size
-		encodedSize = sizeof(encoded); 
-		ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain+nOffset,10,encoded+nOffset,&encodedSize),TEEC_SUCCESS);
-		ASSERT_EQ(encodedSize,16);	//accumuated 10+10-16=4
-
-		nOffset += 10;	//previous input buffer size
-		encodedSize = sizeof(encoded); 
-		ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain+nOffset,10,encoded+nOffset,&encodedSize),TEEC_SUCCESS);
-		ASSERT_EQ(encodedSize,0);	//accumulated 4+10=14, less then 16
-
-		nOffset += 10;	//previous input buffer size
-		encodedSize = sizeof(encoded); 
-		ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain+nOffset,10,encoded+nOffset,&encodedSize),TEEC_SUCCESS);
-		ASSERT_EQ(encodedSize,16);	//accumulated 14+10-16=8
-
-		nOffset += 10;	//previous input buffer size
-		encodedSize = sizeof(encoded); 
-		ASSERT_EQ(keyCipherDoFinal(&o,operHandle,plain+nOffset,8,encoded+nOffset,&encodedSize),TEEC_SUCCESS);
-		ASSERT_EQ(encodedSize,16);	//accumulated 8+8=16-16=0
-
-		nOffset += 8;	//previous input buffer size
-		ASSERT_EQ(nOffset,16*3);
-
-		ASSERT_EQ(keyFreeOper(&o,operHandle),TEEC_SUCCESS);
-	}
+	cipherTest(&o,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_ENCRYPT,keyObj,NULL,0,
+				plain,sizeof(plain),encoded,sizeof(encoded));
 
 	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);
 	closeSession(&o);
