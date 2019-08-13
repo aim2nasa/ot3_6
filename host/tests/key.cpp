@@ -152,34 +152,42 @@ void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const void *iv
 
 	size_t outSize = outBufLen;
 	int nOffset = 0;
+	int nO = 0;
 	ASSERT_EQ(outSize,outBufLen);
 	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
-	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nOffset,10,(char*)outBuf,&outSize),TEEC_SUCCESS);
+	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nOffset,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
 	ASSERT_EQ(outSize,0);	//accumulated 10, less than 16
+	nO+= outSize;
 
 	nOffset += 10;	//previous input buffer size
 	outSize = outBufLen;
 	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
-	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nOffset,10,(char*)outBuf,&outSize),TEEC_SUCCESS);
+	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nOffset,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
 	ASSERT_EQ(outSize,16);	//accumuated 10+10-16=4
+	nO+=outSize;
 
 	nOffset += 10;	//previous input buffer size
 	outSize = outBufLen-16;//16 bytes written so far
 	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
-	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nOffset,10,(char*)outBuf+16,&outSize),TEEC_SUCCESS);
+	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nOffset,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
 	ASSERT_EQ(outSize,0);	//accumulated 4+10=14, less then 16
+	nO+=outSize;
 
 	nOffset += 10;	//previous input buffer size
 	outSize = outBufLen-16;//16 bytes written so far
 	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
-	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nOffset,10,(char*)outBuf+16,&outSize),TEEC_SUCCESS);
+	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nOffset,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
 	ASSERT_EQ(outSize,16);	//accumulated 14+10-16=8
+	nO+=outSize;
 
 	nOffset += 10;	//previous input buffer size
 	outSize = outBufLen-32;//32 bytes written so far
 	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
-	ASSERT_EQ(keyCipherDoFinal(o,operHandle,(char*)inpBuf+nOffset,8,(char*)outBuf+32,&outSize),TEEC_SUCCESS);
+	ASSERT_EQ(keyCipherDoFinal(o,operHandle,(char*)inpBuf+nOffset,8,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
 	ASSERT_EQ(outSize,16);	//accumulated 8+8=16-16=0
+	nO+=outSize;
+
+	ASSERT_EQ(nO,16*3);
 
 	nOffset += 8;	//previous input buffer size
 	ASSERT_EQ(nOffset,16*3);
