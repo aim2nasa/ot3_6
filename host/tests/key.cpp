@@ -212,10 +212,21 @@ TEST(Key, encDec) {
 	char decoded[TEE_AES_BLOCK_SIZE*3]={0,};
 	ASSERT_EQ(sizeof(decoded),16*3);
 
+	/*TEE_ALG_AES_ECB_NOPAD*/
 	cipherTest(&o,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_ENCRYPT,keyObj,NULL,0,
 				plain,sizeof(plain),encoded,sizeof(encoded));
 
 	cipherTest(&o,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_DECRYPT,keyObj,NULL,0,
+				encoded,sizeof(encoded),decoded,sizeof(decoded));
+
+	ASSERT_EQ(memcmp(plain,decoded,sizeof(plain)),0);
+
+	/*TEE_ALG_AES_CBC_NOPAD*/
+	char iv[TEE_AES_BLOCK_SIZE]={0,};
+	cipherTest(&o,TEE_ALG_AES_CBC_NOPAD,TEE_MODE_ENCRYPT,keyObj,iv,sizeof(iv),
+				plain,sizeof(plain),encoded,sizeof(encoded));
+
+	cipherTest(&o,TEE_ALG_AES_CBC_NOPAD,TEE_MODE_DECRYPT,keyObj,iv,sizeof(iv),
 				encoded,sizeof(encoded),decoded,sizeof(decoded));
 
 	ASSERT_EQ(memcmp(plain,decoded,sizeof(plain)),0);
