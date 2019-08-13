@@ -213,6 +213,8 @@ TEST(Key, encDec) {
 	ASSERT_EQ(sizeof(decoded),16*3);
 
 	/*TEE_ALG_AES_ECB_NOPAD*/
+	memset(encoded,0,sizeof(encoded));
+	memset(decoded,0,sizeof(decoded));
 	cipherTest(&o,TEE_ALG_AES_ECB_NOPAD,TEE_MODE_ENCRYPT,keyObj,NULL,0,
 				plain,sizeof(plain),encoded,sizeof(encoded));
 
@@ -222,6 +224,8 @@ TEST(Key, encDec) {
 	ASSERT_EQ(memcmp(plain,decoded,sizeof(plain)),0);
 
 	/*TEE_ALG_AES_CBC_NOPAD*/
+	memset(encoded,0,sizeof(encoded));
+	memset(decoded,0,sizeof(decoded));
 	char iv[TEE_AES_BLOCK_SIZE]={0,};
 	cipherTest(&o,TEE_ALG_AES_CBC_NOPAD,TEE_MODE_ENCRYPT,keyObj,iv,sizeof(iv),
 				plain,sizeof(plain),encoded,sizeof(encoded));
