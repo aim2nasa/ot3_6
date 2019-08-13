@@ -162,10 +162,8 @@ TEST(Key, encDec) {
 	ASSERT_NE(operHandle,(void*)TEE_HANDLE_NULL);
 	ASSERT_EQ(keySetKeyOper(&o,operHandle,keyObj),TEEC_SUCCESS);
 
-	char iv[TEE_AES_BLOCK_SIZE]={1,};	//all elements of value 1
 	ASSERT_EQ(TEE_AES_BLOCK_SIZE,16);
-	ASSERT_EQ(sizeof(iv),16);
-	ASSERT_EQ(keyCipherInit(&o,operHandle,iv,sizeof(iv)),TEEC_SUCCESS);
+	ASSERT_EQ(keyCipherInit(&o,operHandle,NULL,0),TEEC_SUCCESS); //TEE_ALG_AES_ECB_NOPAD does not require IV
 
 	char plain[TEE_AES_BLOCK_SIZE+5]={1,};	//intetionally larger by +5
 	char encoded[TEE_AES_BLOCK_SIZE*2]={0,};
