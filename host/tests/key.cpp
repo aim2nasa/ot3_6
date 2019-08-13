@@ -164,30 +164,39 @@ TEST(Key, encDec) {
 	ASSERT_EQ(TEE_AES_BLOCK_SIZE,16);
 	ASSERT_EQ(keyCipherInit(&o,operHandle,NULL,0),TEEC_SUCCESS); //TEE_ALG_AES_ECB_NOPAD does not require IV
 
-	char plain[TEE_AES_BLOCK_SIZE+5]={1,};	//intetionally larger by +5
-	char encoded[TEE_AES_BLOCK_SIZE*2]={0,};
-	size_t encodedSize = sizeof(encoded);
-	ASSERT_EQ(encodedSize,32);
+	char plain[]={"can't really explain it I haven't got the words"};
+	ASSERT_EQ(sizeof(plain),16*3);
+	char encoded[TEE_AES_BLOCK_SIZE*3]={0,};
+	ASSERT_EQ(sizeof(encoded),16*3);
+	ASSERT_EQ(sizeof(encoded),sizeof(plain));
 
-	//note: sizeof(plain)=21 sizeof(plain)/2 = 10
-	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain,sizeof(plain)/2,encoded,&encodedSize),TEEC_SUCCESS);
+	size_t encodedSize = sizeof(encoded);
+	int nOffset = 0;
+	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain+nOffset,10,encoded+nOffset,&encodedSize),TEEC_SUCCESS);
 	ASSERT_EQ(encodedSize,0);	//accumulated 10, less than 16
 
+	nOffset += 10;	//previous input buffer size
 	encodedSize = sizeof(encoded); 
-	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain,sizeof(plain)/2,encoded,&encodedSize),TEEC_SUCCESS);
+	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain+nOffset,10,encoded+nOffset,&encodedSize),TEEC_SUCCESS);
 	ASSERT_EQ(encodedSize,16);	//accumuated 10+10-16=4
 
+	nOffset += 10;	//previous input buffer size
 	encodedSize = sizeof(encoded); 
-	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain,sizeof(plain)/2,encoded,&encodedSize),TEEC_SUCCESS);
+	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain+nOffset,10,encoded+nOffset,&encodedSize),TEEC_SUCCESS);
 	ASSERT_EQ(encodedSize,0);	//accumulated 4+10=14, less then 16
 
+	nOffset += 10;	//previous input buffer size
 	encodedSize = sizeof(encoded); 
-	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain,sizeof(plain)/2,encoded,&encodedSize),TEEC_SUCCESS);
+	ASSERT_EQ(keyCipherUpdate(&o,operHandle,plain+nOffset,10,encoded+nOffset,&encodedSize),TEEC_SUCCESS);
 	ASSERT_EQ(encodedSize,16);	//accumulated 14+10-16=8
 
+	nOffset += 10;	//previous input buffer size
 	encodedSize = sizeof(encoded); 
-	ASSERT_EQ(keyCipherDoFinal(&o,operHandle,plain,8,encoded,&encodedSize),TEEC_SUCCESS);
+	ASSERT_EQ(keyCipherDoFinal(&o,operHandle,plain+nOffset,8,encoded+nOffset,&encodedSize),TEEC_SUCCESS);
 	ASSERT_EQ(encodedSize,16);	//accumulated 8+8=16-16=0
+
+	nOffset += 8;	//previous input buffer size
+	ASSERT_EQ(nOffset,16*3);
 
 	ASSERT_EQ(keyFreeOper(&o,operHandle),TEEC_SUCCESS);
 
