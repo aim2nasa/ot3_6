@@ -60,7 +60,6 @@ static void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const v
 	int nI = 0;	//input buffer offset
 	int nO = 0; //output buffer offset
 	ASSERT_EQ(outSize,outBufLen);
-	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
 	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
 	if(algo==TEE_ALG_AES_CTR){
 		ASSERT_EQ(outSize,10);
@@ -70,8 +69,7 @@ static void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const v
 	nO+= outSize;
 
 	nI += 10;	//previous input buffer size
-	outSize = outBufLen;
-	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
+	outSize = outBufLen-nO;
 	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
 	if(algo==TEE_ALG_AES_CTR){
 		ASSERT_EQ(outSize,10);
@@ -81,8 +79,7 @@ static void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const v
 	nO+=outSize;
 
 	nI += 10;	//previous input buffer size
-	outSize = outBufLen-16;//16 bytes written so far
-	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
+	outSize = outBufLen-nO;
 	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
 	if(algo==TEE_ALG_AES_CTR){
 		ASSERT_EQ(outSize,10);
@@ -92,8 +89,7 @@ static void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const v
 	nO+=outSize;
 
 	nI += 10;	//previous input buffer size
-	outSize = outBufLen-16;//16 bytes written so far
-	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
+	outSize = outBufLen-nO;
 	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
 	if(algo==TEE_ALG_AES_CTR){
 		ASSERT_EQ(outSize,10);
@@ -103,8 +99,7 @@ static void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const v
 	nO+=outSize;
 
 	nI += 10;	//previous input buffer size
-	outSize = outBufLen-32;//32 bytes written so far
-	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
+	outSize = outBufLen-nO;
 	ASSERT_EQ(keyCipherDoFinal(o,operHandle,(char*)inpBuf+nI,8,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
 	if(algo==TEE_ALG_AES_CTR){
 		ASSERT_EQ(outSize,8);
