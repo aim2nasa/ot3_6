@@ -26,33 +26,39 @@ protected:
 					 TEE_DATA_FLAG_ACCESS_WRITE			|
 					 TEE_DATA_FLAG_SHARE_WRITE;
 
-		keyObj_ = 0;
-		ASSERT_EQ(keyGenerate(&o_,PRIVATE,"aesTestKey",flags,256,&keyObj_),TEEC_SUCCESS);
+		keyObj1_ = keyObj2_ = 0;
+		ASSERT_EQ(keyGenerate(&o_,PRIVATE,"aesTestKey1",flags,256,&keyObj1_),TEEC_SUCCESS);
+		ASSERT_EQ(keyGenerate(&o_,PRIVATE,"aesTestKey2",flags,256,&keyObj2_),TEEC_SUCCESS);
 	}
 
 	void TearDown() override
 	{
-		ASSERT_EQ(keyCloseAndDelete(&o_,keyObj_),TEEC_SUCCESS);
+		ASSERT_EQ(keyCloseAndDelete(&o_,keyObj2_),TEEC_SUCCESS);
+		ASSERT_EQ(keyCloseAndDelete(&o_,keyObj1_),TEEC_SUCCESS);
 		closeSession(&o_);
 		finalizeContext(&o_);
 	}
 
 	oc o_;
 	TEEC_UUID uuid_;
-	uint32_t keyObj_;
+	uint32_t keyObj1_,keyObj2_;
 	char plain_[TESTING_DATA_SIZE];
 	char encod_[TESTING_DATA_SIZE];
 	char decod_[TESTING_DATA_SIZE];
 	char iv_[TEE_AES_BLOCK_SIZE];
 };
 
-static void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const void *iv,size_t ivLen,
+static void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj1,uint32_t keyObj2,const void *iv,size_t ivLen,
 				const void *inpBuf,size_t inpBufLen,void *outBuf,size_t outBufLen)
 {
 	OperHandle operHandle = TEE_HANDLE_NULL;
-	ASSERT_EQ(keyAllocOper(o,algo,mode,keyObj,&operHandle),TEEC_SUCCESS);
+	ASSERT_EQ(keyAllocOper(o,algo,mode,keyObj1,&operHandle),TEEC_SUCCESS);
 	ASSERT_NE(operHandle,(void*)TEE_HANDLE_NULL);
-	ASSERT_EQ(keySetKeyOper(o,operHandle,keyObj),TEEC_SUCCESS);
+
+	if(algo==TEE_ALG_AES_XTS)
+		ASSERT_EQ(keySetKey2Oper(o,operHandle,keyObj1,keyObj2),TEEC_SUCCESS);
+	else
+		ASSERT_EQ(keySetKeyOper(o,operHandle,keyObj1),TEEC_SUCCESS);
 
 	ASSERT_EQ(keyCipherInit(o,operHandle,iv,ivLen),TEEC_SUCCESS);
 
@@ -96,36 +102,42 @@ static void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const v
 	ASSERT_EQ(keyFreeOper(o,operHandle),TEEC_SUCCESS);
 }
 
-static void encDecVerify(oc *o,uint32_t algo,uint32_t keyObj,const void *iv,size_t ivLen,
+static void encDecVerify(oc *o,uint32_t algo,uint32_t keyObj1,uint32_t keyObj2,const void *iv,size_t ivLen,
 	const void *plain,size_t plainLen,void *encoded,size_t encodedLen,void *decoded,size_t decodedLen)
 {
 	memset(encoded,0,encodedLen);
 	memset(decoded,0,decodedLen);
-	cipherTest(o,algo,TEE_MODE_ENCRYPT,keyObj,iv,ivLen,plain,plainLen,encoded,encodedLen);
-	cipherTest(o,algo,TEE_MODE_DECRYPT,keyObj,iv,ivLen,encoded,encodedLen,decoded,decodedLen);
+	cipherTest(o,algo,TEE_MODE_ENCRYPT,keyObj1,keyObj2,iv,ivLen,plain,plainLen,encoded,encodedLen);
+	cipherTest(o,algo,TEE_MODE_DECRYPT,keyObj1,keyObj2,iv,ivLen,encoded,encodedLen,decoded,decodedLen);
 	ASSERT_EQ(memcmp(plain,decoded,plainLen),0);
 }
 
 TEST_F(AesTest,TEE_ALG_AES_ECB_NOPAD)
 {
-	encDecVerify(&o_,TEE_ALG_AES_ECB_NOPAD,keyObj_,NULL,0,plain_,sizeof(plain_),
+	encDecVerify(&o_,TEE_ALG_AES_ECB_NOPAD,keyObj1_,0,NULL,0,plain_,sizeof(plain_),
 					encod_,sizeof(encod_),decod_,sizeof(decod_));
 }
 
 TEST_F(AesTest,TEE_ALG_AES_CBC_NOPAD)
 {
-	encDecVerify(&o_,TEE_ALG_AES_CBC_NOPAD,keyObj_,iv_,sizeof(iv_),plain_,sizeof(plain_),
+	encDecVerify(&o_,TEE_ALG_AES_CBC_NOPAD,keyObj1_,0,iv_,sizeof(iv_),plain_,sizeof(plain_),
 					encod_,sizeof(encod_),decod_,sizeof(decod_));
 }
 
 TEST_F(AesTest,TEE_ALG_AES_CTR)
 {
-	encDecVerify(&o_,TEE_ALG_AES_CTR,keyObj_,iv_,sizeof(iv_),plain_,sizeof(plain_),
+	encDecVerify(&o_,TEE_ALG_AES_CTR,keyObj1_,0,iv_,sizeof(iv_),plain_,sizeof(plain_),
 					encod_,sizeof(encod_),decod_,sizeof(decod_));
 }
 
 TEST_F(AesTest,TEE_ALG_AES_CTS)
 {
-	encDecVerify(&o_,TEE_ALG_AES_CTS,keyObj_,iv_,sizeof(iv_),plain_,sizeof(plain_),
+	encDecVerify(&o_,TEE_ALG_AES_CTS,keyObj1_,0,iv_,sizeof(iv_),plain_,sizeof(plain_),
+					encod_,sizeof(encod_),decod_,sizeof(decod_));
+}
+
+TEST_F(AesTest,TEE_ALG_AES_XTS)
+{
+	encDecVerify(&o_,TEE_ALG_AES_XTS,keyObj1_,keyObj2_,iv_,sizeof(iv_),plain_,sizeof(plain_),
 					encod_,sizeof(encod_),decod_,sizeof(decod_));
 }
