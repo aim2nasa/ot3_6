@@ -112,31 +112,31 @@ static void encDecVerify(oc *o,uint32_t algo,uint32_t keyObj1,uint32_t keyObj2,c
 	ASSERT_EQ(memcmp(plain,decoded,plainLen),0);
 }
 
-TEST_F(AesTest,TEE_ALG_AES_ECB_NOPAD)
+TEST_F(AesTest,AES_ECB_NOPAD)
 {
 	encDecVerify(&o_,TEE_ALG_AES_ECB_NOPAD,keyObj1_,0,NULL,0,plain_,sizeof(plain_),
 					encod_,sizeof(encod_),decod_,sizeof(decod_));
 }
 
-TEST_F(AesTest,TEE_ALG_AES_CBC_NOPAD)
+TEST_F(AesTest,AES_CBC_NOPAD)
 {
 	encDecVerify(&o_,TEE_ALG_AES_CBC_NOPAD,keyObj1_,0,iv_,sizeof(iv_),plain_,sizeof(plain_),
 					encod_,sizeof(encod_),decod_,sizeof(decod_));
 }
 
-TEST_F(AesTest,TEE_ALG_AES_CTR)
+TEST_F(AesTest,AES_CTR)
 {
 	encDecVerify(&o_,TEE_ALG_AES_CTR,keyObj1_,0,iv_,sizeof(iv_),plain_,sizeof(plain_),
 					encod_,sizeof(encod_),decod_,sizeof(decod_));
 }
 
-TEST_F(AesTest,TEE_ALG_AES_CTS)
+TEST_F(AesTest,AES_CTS)
 {
 	encDecVerify(&o_,TEE_ALG_AES_CTS,keyObj1_,0,iv_,sizeof(iv_),plain_,sizeof(plain_),
 					encod_,sizeof(encod_),decod_,sizeof(decod_));
 }
 
-TEST_F(AesTest,TEE_ALG_AES_XTS)
+TEST_F(AesTest,AES_XTS)
 {
 	encDecVerify(&o_,TEE_ALG_AES_XTS,keyObj1_,keyObj2_,iv_,sizeof(iv_),plain_,sizeof(plain_),
 					encod_,sizeof(encod_),decod_,sizeof(decod_));
