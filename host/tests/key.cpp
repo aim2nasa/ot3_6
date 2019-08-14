@@ -156,35 +156,55 @@ void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const void *iv
 	ASSERT_EQ(outSize,outBufLen);
 	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
 	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
-	ASSERT_EQ(outSize,0);	//accumulated 10, less than 16
+	if(algo==TEE_ALG_AES_CTR){
+		ASSERT_EQ(outSize,10);
+	}else{
+		ASSERT_EQ(outSize,0);	//accumulated 10, less than 16
+	}
 	nO+= outSize;
 
 	nI += 10;	//previous input buffer size
 	outSize = outBufLen;
 	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
 	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
-	ASSERT_EQ(outSize,16);	//accumuated 10+10-16=4
+	if(algo==TEE_ALG_AES_CTR){
+		ASSERT_EQ(outSize,10);
+	}else{
+		ASSERT_EQ(outSize,16);	//accumuated 10+10-16=4
+	}
 	nO+=outSize;
 
 	nI += 10;	//previous input buffer size
 	outSize = outBufLen-16;//16 bytes written so far
 	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
 	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
-	ASSERT_EQ(outSize,0);	//accumulated 4+10=14, less then 16
+	if(algo==TEE_ALG_AES_CTR){
+		ASSERT_EQ(outSize,10);
+	}else{
+		ASSERT_EQ(outSize,0);	//accumulated 4+10=14, less then 16
+	}
 	nO+=outSize;
 
 	nI += 10;	//previous input buffer size
 	outSize = outBufLen-16;//16 bytes written so far
 	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
 	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
-	ASSERT_EQ(outSize,16);	//accumulated 14+10-16=8
+	if(algo==TEE_ALG_AES_CTR){
+		ASSERT_EQ(outSize,10);
+	}else{
+		ASSERT_EQ(outSize,16);	//accumulated 14+10-16=8
+	}
 	nO+=outSize;
 
 	nI += 10;	//previous input buffer size
 	outSize = outBufLen-32;//32 bytes written so far
 	ASSERT_GE(outSize,16);	//To avoid TEE_ERROR_SHORT_BUFFER
 	ASSERT_EQ(keyCipherDoFinal(o,operHandle,(char*)inpBuf+nI,8,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
-	ASSERT_EQ(outSize,16);	//accumulated 8+8=16-16=0
+	if(algo==TEE_ALG_AES_CTR){
+		ASSERT_EQ(outSize,8);
+	}else{
+		ASSERT_EQ(outSize,16);	//accumulated 8+8=16-16=0
+	}
 	nO+=outSize;
 
 	ASSERT_EQ(nO,16*3);
@@ -239,6 +259,17 @@ TEST(Key, encDec) {
 				plain,sizeof(plain),encoded,sizeof(encoded));
 
 	cipherTest(&o,TEE_ALG_AES_CBC_NOPAD,TEE_MODE_DECRYPT,keyObj,iv,sizeof(iv),
+				encoded,sizeof(encoded),decoded,sizeof(decoded));
+
+	ASSERT_EQ(memcmp(plain,decoded,sizeof(plain)),0);
+
+	/*TEE_ALG_AES_CTR*/
+	memset(encoded,0,sizeof(encoded));
+	memset(decoded,0,sizeof(decoded));
+	cipherTest(&o,TEE_ALG_AES_CTR,TEE_MODE_ENCRYPT,keyObj,iv,sizeof(iv),
+				plain,sizeof(plain),encoded,sizeof(encoded));
+
+	cipherTest(&o,TEE_ALG_AES_CTR,TEE_MODE_DECRYPT,keyObj,iv,sizeof(iv),
 				encoded,sizeof(encoded),decoded,sizeof(decoded));
 
 	ASSERT_EQ(memcmp(plain,decoded,sizeof(plain)),0);
