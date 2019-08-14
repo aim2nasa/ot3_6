@@ -113,6 +113,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 	case TA_KEY_CMD_SET_KEY_OPER:
 		IMSG("TA_KEY_CMD_SET_KEY_OPER command");
 		return ta_key_cmd_set_key_oper(nParamTypes, pParams);
+	case TA_KEY_CMD_SET_KEY2_OPER:
+		IMSG("TA_KEY_CMD_SET_KEY2_OPER command");
+		return ta_key_cmd_set_key2_oper(nParamTypes, pParams);
 	case TA_KEY_CMD_CIPHER_INIT:
 		IMSG("TA_KEY_CMD_CIPHER_INIT command");
 		return ta_key_cmd_cipher_init(nParamTypes, pParams);
