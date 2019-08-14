@@ -45,7 +45,9 @@ void display(eObjList *list)
 		memcpy(id,cur->object->id,cur->object->idSize);
 		id[cur->object->idSize]=0;
 
+		#ifdef _DEBUG_TEST_
 		std::cout<<"["<<i++<<"] "<<id<<std::endl;
+		#endif
 
 		if(cur->next)
 			cur = cur->next;
@@ -131,8 +133,10 @@ TEST(Key, getObjectBufferAttribute) {
 	ASSERT_EQ(keyGetObjectBufferAttribute(&o,keyObj,TEE_ATTR_SECRET_VALUE,keyBuffer,&keySize),TEEC_SUCCESS);
 
 	ASSERT_EQ(keySize*8,256);
+	#ifdef _DEBUG_TEST_
 	for(size_t i=0;i<keySize;i++) std::cout<<std::hex<<(int)keyBuffer[i]<<" ";
 	std::cout<<std::endl;
+	#endif
 
 	ASSERT_EQ(keyCloseAndDelete(&o,keyObj),TEEC_SUCCESS);
 

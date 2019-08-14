@@ -15,14 +15,18 @@ TEST(Crypt, aes256ecb_encDec) {
 
 	size_t len = sizeof(out);
 	ASSERT_EQ(ta_crypt_cmd_aes256ecb_enc(&o,inp,sizeof(inp),out,&len),TEEC_SUCCESS);
+	#ifdef _DEBUG_TEST_
 	std::cout<<"len="<<len<<std::endl;
+	#endif
 
 	ASSERT_NE(memcmp(inp,out,len),0);
 	
 	uint8_t tmp[16]={0};
 	size_t tmpLen = sizeof(tmp);
 	ASSERT_EQ(ta_crypt_cmd_aes256ecb_dec(&o,out,len,tmp,&tmpLen),TEEC_SUCCESS);
+	#ifdef _DEBUG_TEST_
 	std::cout<<"tmpLen="<<tmpLen<<std::endl;
+	#endif
 
 	ASSERT_EQ(tmpLen,sizeof(inp));
 	ASSERT_EQ(memcmp(inp,tmp,tmpLen),0);
@@ -48,7 +52,9 @@ TEST(Crypt, sha256) {
 
 	size_t len = sizeof(out);
 	ASSERT_EQ(ta_crypt_cmd_sha256(&o,sha256_in,sizeof(sha256_in),out,&len),TEEC_SUCCESS);
+	#ifdef _DEBUG_TEST_
 	std::cout<<"len="<<len<<std::endl;
+	#endif
 
 	ASSERT_EQ(memcmp(sha256_out,out,len),0);
 	ASSERT_EQ(len,sizeof(out));
