@@ -71,41 +71,21 @@ static void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const v
 	nI += 10;	//previous input buffer size
 	outSize = outBufLen-nO;
 	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
-	if(algo==TEE_ALG_AES_CTR){
-		ASSERT_EQ(outSize,10);
-	}else{
-		ASSERT_EQ(outSize,16);	//accumuated 10+10-16=4
-	}
 	nO+=outSize;
 
 	nI += 10;	//previous input buffer size
 	outSize = outBufLen-nO;
 	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
-	if(algo==TEE_ALG_AES_CTR){
-		ASSERT_EQ(outSize,10);
-	}else{
-		ASSERT_EQ(outSize,0);	//accumulated 4+10=14, less then 16
-	}
 	nO+=outSize;
 
 	nI += 10;	//previous input buffer size
 	outSize = outBufLen-nO;
 	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
-	if(algo==TEE_ALG_AES_CTR){
-		ASSERT_EQ(outSize,10);
-	}else{
-		ASSERT_EQ(outSize,16);	//accumulated 14+10-16=8
-	}
 	nO+=outSize;
 
 	nI += 10;	//previous input buffer size
 	outSize = outBufLen-nO;
 	ASSERT_EQ(keyCipherDoFinal(o,operHandle,(char*)inpBuf+nI,8,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
-	if(algo==TEE_ALG_AES_CTR){
-		ASSERT_EQ(outSize,8);
-	}else{
-		ASSERT_EQ(outSize,16);	//accumulated 8+8=16-16=0
-	}
 	nO+=outSize;
 
 	ASSERT_EQ(nO,16*3);
@@ -141,5 +121,11 @@ TEST_F(AesTest,TEE_ALG_AES_CBC_NOPAD)
 TEST_F(AesTest,TEE_ALG_AES_CTR)
 {
 	encDecVerify(&o_,TEE_ALG_AES_CTR,keyObj_,iv_,sizeof(iv_),plain_,sizeof(plain_),
+					encod_,sizeof(encod_),decod_,sizeof(decod_));
+}
+
+TEST_F(AesTest,TEE_ALG_AES_CTS)
+{
+	encDecVerify(&o_,TEE_ALG_AES_CTS,keyObj_,iv_,sizeof(iv_),plain_,sizeof(plain_),
 					encod_,sizeof(encod_),decod_,sizeof(decod_));
 }
