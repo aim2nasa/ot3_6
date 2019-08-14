@@ -14,6 +14,7 @@ protected:
 		ASSERT_EQ(initializeContext(NULL,&o_),TEEC_SUCCESS);
 		ASSERT_EQ(openSession(&o_,&uuid_,TEEC_LOGIN_PUBLIC,NULL,NULL),TEEC_SUCCESS);
 
+		ASSERT_EQ(sizeof(TESTING_TEXT),TESTING_DATA_SIZE);
 		memcpy(plain_,TESTING_TEXT,TESTING_DATA_SIZE);
 		memset(encod_,0,TESTING_DATA_SIZE);
 		memset(decod_,0,TESTING_DATA_SIZE);
