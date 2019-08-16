@@ -62,6 +62,7 @@ extern "C" {
 	TEEC_Result keyAEInit(oc *o,OperHandle operHandle,const void* nonce,uint32_t nonceLen,
 							uint32_t tagLen,uint32_t aadLen,uint32_t payloadLen);
 	TEEC_Result keyAEUpdateAad(oc *o,OperHandle operHandle,const void* aad,uint32_t aadLen);
+	TEEC_Result keyAEUpdate(oc *o,OperHandle operHandle,const void *src,size_t srcLen,void *dst,size_t *dstLen);
 
 #ifdef __cplusplus
 }

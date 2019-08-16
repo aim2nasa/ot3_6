@@ -368,3 +368,20 @@ TEEC_Result keyAEUpdateAad(oc *o,OperHandle operHandle,const void* aad,uint32_t 
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_NONE,TEEC_NONE);
 	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_AE_UPDATE_AAD,&op,&o->error);
 }
+
+TEEC_Result keyAEUpdate(oc *o,OperHandle operHandle,const void *src,size_t srcLen,
+							void *dst,size_t *dstLen)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = (uintptr_t)operHandle;
+	op.params[1].memref.parent = (void*)src;
+	op.params[1].memref.size = srcLen;
+	op.params[2].memref.parent = dst;
+	op.params[2].memref.size = *dstLen;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,
+					 TEEC_MEMREF_TEMP_OUTPUT,TEEC_NONE);
+	TEEC_Result res = TEEC_InvokeCommand(o->session,TA_KEY_CMD_AE_UPDATE,&op,&o->error);
+	if(res==TEEC_SUCCESS) *dstLen = op.params[2].memref.size;
+	return res;
+}
