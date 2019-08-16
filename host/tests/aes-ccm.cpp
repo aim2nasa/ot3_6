@@ -156,11 +156,20 @@ static void aeTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const void 
 TEST_F(AesCcmTest,encoding)
 {
 	SetUp(256/*keySize*/,13/*nonceLen*/,4/*tagLen*/,16/*aadLen*/,TESTING_DATA_SIZE/*payloadLen*/);
+
+#ifdef _DEBUG_TEST_
+	std::cout<<"before encryption:";
+	for(size_t i=0;i<sizeof(encod_);i++) std::cout<<std::hex<<(int)encod_[i]<<" ";
+	std::cout<<std::endl;
+#endif
+
 	aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_ENCRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
 			plain_,sizeof(plain_),encod_,sizeof(encod_),tag_);
 
 #ifdef _DEBUG_TEST_
+	std::cout<<"after encryption:";
 	for(size_t i=0;i<sizeof(encod_);i++) std::cout<<std::hex<<(int)encod_[i]<<" ";
+	std::cout<<std::endl;
 #endif
 }
 
