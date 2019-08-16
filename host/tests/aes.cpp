@@ -67,11 +67,6 @@ static void cipherTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj1,uint32
 	int nO = 0; //output buffer offset
 	ASSERT_EQ(outSize,outBufLen);
 	ASSERT_EQ(keyCipherUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
-	if(algo==TEE_ALG_AES_CTR){
-		ASSERT_EQ(outSize,10);
-	}else{
-		ASSERT_EQ(outSize,0);	//accumulated 10, less than 16
-	}
 	nO+= outSize;
 
 	nI += 10;	//previous input buffer size
