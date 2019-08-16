@@ -116,7 +116,7 @@ static TEE_Result ta_key_cmd_ae_encrypt_final(uint32_t param_types, TEE_Param pa
 			params[1].memref.buffer, params[1].memref.size,
 			params[2].memref.buffer, &params[2].memref.size,
 			params[3].memref.buffer, &params[3].memref.size);
-	DMSG("AEUpdate result=0x%x, updated destLen=%u,tagLen=%u",
+	DMSG("AEEncryptFinal result=0x%x, updated destLen=%u,tagLen=%u",
 		res,params[2].memref.size,params[3].memref.size);
 	return res;
 }
