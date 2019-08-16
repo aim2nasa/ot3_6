@@ -128,6 +128,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 	case TA_KEY_CMD_AE_INIT:
 		IMSG("TA_KEY_CMD_AE_INIT command");
 		return ta_key_cmd_ae_init(nParamTypes, pParams);
+	case TA_KEY_CMD_AE_UPDATE_AAD:
+		IMSG("TA_KEY_CMD_AE_UPDATE_AAD command");
+		return ta_key_cmd_ae_update_aad(nParamTypes, pParams);
 	default:
 		IMSG("TEE_ERROR_NOT_SUPPORTED");
 		return TEE_ERROR_NOT_SUPPORTED;

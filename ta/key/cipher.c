@@ -66,3 +66,17 @@ static TEE_Result ta_key_cmd_ae_init(uint32_t param_types, TEE_Param params[4])
 	DMSG("AEInit result=0x%x",res);
 	return res;
 }
+
+static TEE_Result ta_key_cmd_ae_update_aad(uint32_t param_types, TEE_Param params[4])
+{
+	TEE_OperationHandle op = VAL2HANDLE(params[0].value.a);
+
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT,
+			   TEE_PARAM_TYPE_MEMREF_INPUT, TEE_PARAM_TYPE_NONE,
+			   TEE_PARAM_TYPE_NONE));
+
+	TEE_AEUpdateAAD(op, params[1].memref.buffer, params[1].memref.size);
+	DMSG("AEUpdateAAD operHandle=%p,AADLen=%u",op,params[1].memref.size);
+	return TEE_SUCCESS;
+}

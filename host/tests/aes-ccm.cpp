@@ -84,5 +84,8 @@ TEST_F(AesCcmTest,init)
 
 	ASSERT_EQ(keyAEInit(&o_,op,nonce_,nonceLen_,tagLen_,aadLen_,payloadLen_),TEEC_SUCCESS);
 
+	std::string aad("This is aad");
+	ASSERT_EQ(keyAEUpdateAad(&o_,op,aad.c_str(),aad.size()),TEEC_SUCCESS);
+
 	ASSERT_EQ(keyFreeOper(&o_,op),TEEC_SUCCESS);
 }

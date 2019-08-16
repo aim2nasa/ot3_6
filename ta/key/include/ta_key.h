@@ -26,5 +26,6 @@
 #define TA_KEY_CMD_CIPHER_DO_FINAL				18
 #define TA_KEY_CMD_SET_KEY2_OPER				19
 #define TA_KEY_CMD_AE_INIT						20
+#define TA_KEY_CMD_AE_UPDATE_AAD				21
 
 #endif /*TA_KEY_H */
