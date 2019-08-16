@@ -65,7 +65,8 @@ extern "C" {
 	TEEC_Result keyAEUpdate(oc *o,OperHandle operHandle,const void *src,size_t srcLen,void *dst,size_t *dstLen);
 	TEEC_Result keyAEEncryptFinal(oc *o,OperHandle operHandle,const void *src,size_t srcLen,
 							void *dst,size_t *dstLen,void *tag,size_t *tagLen);
-
+	TEEC_Result keyAEDecryptFinal(oc *o,OperHandle operHandle,const void *src,size_t srcLen,
+							void *dst,size_t *dstLen,void *tag,size_t tagLen);
 
 #ifdef __cplusplus
 }

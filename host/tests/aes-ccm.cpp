@@ -135,7 +135,14 @@ static void aeTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const void 
 	nI += 10;	//previous input buffer size
 	outSize = outBufLen-nO;
 	size_t outTagLen = tagLen;
-	ASSERT_EQ(keyAEEncryptFinal(o,operHandle,(char*)inpBuf+nI,8,(char*)outBuf+nO,&outSize,(char*)tag,&outTagLen),TEEC_SUCCESS);
+	if(mode==TEE_MODE_ENCRYPT){
+		ASSERT_EQ(keyAEEncryptFinal(o,operHandle,(char*)inpBuf+nI,8,(char*)outBuf+nO,&outSize,(char*)tag,&outTagLen),TEEC_SUCCESS);
+	}else if(mode==TEE_MODE_DECRYPT){
+		ASSERT_EQ(keyAEDecryptFinal(o,operHandle,(char*)inpBuf+nI,8,(char*)outBuf+nO,&outSize,(char*)tag,tagLen),TEEC_SUCCESS);
+	}else{
+		ASSERT_TRUE(0);	//in this case, wrong mode is given
+	}
+
 	nO+=outSize;
 
 	ASSERT_EQ(nO,16*3);
@@ -154,5 +161,20 @@ TEST_F(AesCcmTest,encoding)
 
 #ifdef _DEBUG_TEST_
 	for(size_t i=0;i<sizeof(encod_);i++) std::cout<<std::hex<<(int)encod_[i]<<" ";
+#endif
+}
+
+TEST_F(AesCcmTest,encDecVerify)
+{
+	SetUp(256/*keySize*/,13/*nonceLen*/,4/*tagLen*/,16/*aadLen*/,TESTING_DATA_SIZE/*payloadLen*/);
+	aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_ENCRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
+			plain_,sizeof(plain_),encod_,sizeof(encod_),tag_);
+	aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_DECRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
+			encod_,sizeof(encod_),decod_,sizeof(decod_),tag_);
+
+	ASSERT_EQ(memcmp(plain_,decod_,sizeof(plain_)),0);
+
+#ifdef _DEBUG_TEST_
+	std::cout<<decod_<<std::endl;
 #endif
 }
