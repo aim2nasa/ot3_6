@@ -98,3 +98,25 @@ static TEE_Result ta_key_cmd_ae_update(uint32_t param_types, TEE_Param params[4]
 	DMSG("AEUpdate result=0x%x, updated destLen=%u",res,params[2].memref.size);
 	return res;
 }
+
+static TEE_Result ta_key_cmd_ae_encrypt_final(uint32_t param_types, TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT,
+			   TEE_PARAM_TYPE_MEMREF_INPUT,
+			   TEE_PARAM_TYPE_MEMREF_OUTPUT,
+			   TEE_PARAM_TYPE_MEMREF_OUTPUT));
+
+	TEE_OperationHandle op = VAL2HANDLE(params[0].value.a);
+	TEE_Result res = TEE_ERROR_GENERIC;
+
+	DMSG("AEEncryptFinal operHandle=%p,srcLen=%u destLen=%u tagLen=%u",
+		op,params[1].memref.size,params[2].memref.size,params[3].memref.size);
+	res = TEE_AEEncryptFinal(op,
+			params[1].memref.buffer, params[1].memref.size,
+			params[2].memref.buffer, &params[2].memref.size,
+			params[3].memref.buffer, &params[3].memref.size);
+	DMSG("AEUpdate result=0x%x, updated destLen=%u,tagLen=%u",
+		res,params[2].memref.size,params[3].memref.size);
+	return res;
+}

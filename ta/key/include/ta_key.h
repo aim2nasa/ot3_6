@@ -28,5 +28,6 @@
 #define TA_KEY_CMD_AE_INIT						20
 #define TA_KEY_CMD_AE_UPDATE_AAD				21
 #define TA_KEY_CMD_AE_UPDATE					22
+#define TA_KEY_CMD_AE_ENCRYPT_FINAL				23
 
 #endif /*TA_KEY_H */

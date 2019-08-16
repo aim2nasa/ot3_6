@@ -134,6 +134,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 	case TA_KEY_CMD_AE_UPDATE:
 		IMSG("TA_KEY_CMD_AE_UPDATE command");
 		return ta_key_cmd_ae_update(nParamTypes, pParams);
+	case TA_KEY_CMD_AE_ENCRYPT_FINAL:
+		IMSG("TA_KEY_CMD_AE_ENCRYPT_FINAL command");
+		return ta_key_cmd_ae_encrypt_final(nParamTypes, pParams);
 	default:
 		IMSG("TEE_ERROR_NOT_SUPPORTED");
 		return TEE_ERROR_NOT_SUPPORTED;

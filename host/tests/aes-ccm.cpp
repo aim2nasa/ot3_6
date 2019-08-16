@@ -19,7 +19,7 @@ protected:
 		memset(encod_,0,TESTING_DATA_SIZE);
 		memset(decod_,0,TESTING_DATA_SIZE);
 
-		nonce_ = NULL;
+		nonce_ = tag_ = NULL;
 		keyObj_ = keySize_ = nonceLen_ = tagLen_ = aadLen_ = payloadLen_ = 0;
 	}
 
@@ -48,10 +48,14 @@ protected:
 
 		nonce_ = new char[nonceLen_];
 		memset(nonce_,0,nonceLen_);
+
+		tag_ = new char[tagLen_];
+		memset(tag_,0,tagLen_);
 	}
 
 	void TearDown() override
 	{
+		delete [] tag_;
 		delete [] nonce_;
 		ASSERT_EQ(keyCloseAndDelete(&o_,keyObj_),TEEC_SUCCESS);
 		closeSession(&o_);
@@ -64,6 +68,7 @@ protected:
 	char encod_[TESTING_DATA_SIZE];
 	char decod_[TESTING_DATA_SIZE];
 	char *nonce_;
+	char *tag_;
 	uint32_t keyObj_;
 	uint32_t keySize_;
 	uint32_t nonceLen_;
@@ -92,7 +97,7 @@ TEST_F(AesCcmTest,init)
 
 static void aeTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const void *nonce,size_t nonceLen,
 				uint32_t tagLen,uint32_t payloadLen,std::string aad,
-				const void *inpBuf,size_t inpBufLen,void *outBuf,size_t outBufLen)
+				const void *inpBuf,size_t inpBufLen,void *outBuf,size_t outBufLen,void *tag)
 {
 	OperHandle operHandle = TEE_HANDLE_NULL;
 	ASSERT_EQ(keyAllocOper(o,algo,mode,keyObj,&operHandle),TEEC_SUCCESS);
@@ -117,6 +122,27 @@ static void aeTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const void 
 	ASSERT_EQ(keyAEUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
 	nO+=outSize;
 
+	nI += 10;	//previous input buffer size
+	outSize = outBufLen-nO;
+	ASSERT_EQ(keyAEUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
+	nO+=outSize;
+
+	nI += 10;	//previous input buffer size
+	outSize = outBufLen-nO;
+	ASSERT_EQ(keyAEUpdate(o,operHandle,(char*)inpBuf+nI,10,(char*)outBuf+nO,&outSize),TEEC_SUCCESS);
+	nO+=outSize;
+
+	nI += 10;	//previous input buffer size
+	outSize = outBufLen-nO;
+	size_t outTagLen = tagLen;
+	ASSERT_EQ(keyAEEncryptFinal(o,operHandle,(char*)inpBuf+nI,8,(char*)outBuf+nO,&outSize,(char*)tag,&outTagLen),TEEC_SUCCESS);
+	nO+=outSize;
+
+	ASSERT_EQ(nO,16*3);
+
+	nI += 8;	//previous input buffer size
+	ASSERT_EQ(nI,16*3);
+
 	ASSERT_EQ(keyFreeOper(o,operHandle),TEEC_SUCCESS);
 }
 
@@ -124,5 +150,9 @@ TEST_F(AesCcmTest,encoding)
 {
 	SetUp(256/*keySize*/,13/*nonceLen*/,4/*tagLen*/,16/*aadLen*/,TESTING_DATA_SIZE/*payloadLen*/);
 	aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_ENCRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
-			plain_,sizeof(plain_),encod_,sizeof(encod_));
+			plain_,sizeof(plain_),encod_,sizeof(encod_),tag_);
+
+#ifdef _DEBUG_TEST_
+	for(size_t i=0;i<sizeof(encod_);i++) std::cout<<std::hex<<(int)encod_[i]<<" ";
+#endif
 }

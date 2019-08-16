@@ -385,3 +385,25 @@ TEEC_Result keyAEUpdate(oc *o,OperHandle operHandle,const void *src,size_t srcLe
 	if(res==TEEC_SUCCESS) *dstLen = op.params[2].memref.size;
 	return res;
 }
+
+TEEC_Result keyAEEncryptFinal(oc *o,OperHandle operHandle,const void *src,size_t srcLen,
+							void *dst,size_t *dstLen,void *tag,size_t *tagLen)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = (uintptr_t)operHandle;
+	op.params[1].tmpref.buffer = (void*)src;
+	op.params[1].tmpref.size = srcLen;
+	op.params[2].tmpref.buffer = dst;
+	op.params[2].tmpref.size = *dstLen;
+	op.params[3].tmpref.buffer = tag;
+	op.params[3].tmpref.size = *tagLen;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,
+					 TEEC_MEMREF_TEMP_OUTPUT,TEEC_MEMREF_TEMP_OUTPUT);
+	TEEC_Result res = TEEC_InvokeCommand(o->session,TA_KEY_CMD_AE_ENCRYPT_FINAL,&op,&o->error);
+	if(res==TEEC_SUCCESS) {
+		*dstLen = op.params[2].tmpref.size;
+		*tagLen = op.params[3].tmpref.size;
+	}
+	return res;
+}
