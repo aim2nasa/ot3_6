@@ -46,3 +46,23 @@ static TEE_Result ta_key_cmd_cipher_do_final(uint32_t param_types, TEE_Param par
 	DMSG("CipherDoFinal result=0x%x,Updated output size:%d",res,params[2].memref.size);
 	return res;
 }
+
+static TEE_Result ta_key_cmd_ae_init(uint32_t param_types, TEE_Param params[4])
+{
+	ASSERT_PARAM_TYPE(TEE_PARAM_TYPES
+			  (TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_MEMREF_INPUT,
+			   TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_NONE));
+
+	TEE_Result res;
+	TEE_OperationHandle op = VAL2HANDLE(params[0].value.a);
+
+	DMSG("AEInit operHandle=%p,nonceLen=%u tagLen(bit)=%u AADLen=%u payloadLen=%u",
+		op,params[1].memref.size,params[0].value.b*8,params[2].value.a,params[2].value.b);
+	res = TEE_AEInit(op,
+					 params[1].memref.buffer,params[1].memref.size,
+					 params[0].value.b*8,	//tag length in bits
+					 params[2].value.a,		//AAD length
+					 params[2].value.b);	//payload length
+	DMSG("AEInit result=0x%x",res);
+	return res;
+}

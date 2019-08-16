@@ -342,3 +342,18 @@ TEEC_Result keyCipherDoFinal(oc *o,OperHandle operHandle,const void *src,size_t 
 {
 	return doCipher(TA_KEY_CMD_CIPHER_DO_FINAL,o,operHandle,src,srcLen,dst,dstLen);
 }
+
+TEEC_Result keyAEInit(oc *o,OperHandle operHandle,const void* nonce,uint32_t nonceLen,
+						uint32_t tagLen,uint32_t aadLen,uint32_t payloadLen)
+{
+	TEEC_Operation op = TEEC_OPERATION_INITIALIZER;
+
+	op.params[0].value.a = (uintptr_t)operHandle;
+	op.params[0].value.b = tagLen;
+	op.params[1].tmpref.buffer = (void*)nonce;
+	op.params[1].tmpref.size = nonceLen;
+	op.params[2].value.a = aadLen;
+	op.params[2].value.b = payloadLen;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT,TEEC_MEMREF_TEMP_INPUT,TEEC_VALUE_INPUT,TEEC_NONE);
+	return TEEC_InvokeCommand(o->session,TA_KEY_CMD_AE_INIT,&op,&o->error);
+}

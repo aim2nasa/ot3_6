@@ -125,6 +125,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void *pSessionContext,
 	case TA_KEY_CMD_CIPHER_DO_FINAL:
 		IMSG("TA_KEY_CMD_CIPHER_DO_FINAL command");
 		return ta_key_cmd_cipher_do_final(nParamTypes, pParams);
+	case TA_KEY_CMD_AE_INIT:
+		IMSG("TA_KEY_CMD_AE_INIT command");
+		return ta_key_cmd_ae_init(nParamTypes, pParams);
 	default:
 		IMSG("TEE_ERROR_NOT_SUPPORTED");
 		return TEE_ERROR_NOT_SUPPORTED;
