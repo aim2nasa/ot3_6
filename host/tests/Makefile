@@ -13,7 +13,7 @@ INCLUDES += -I../../ta/crypt/include \
 			-I$(TA_DEV_KIT_DIR)/host_include
 
 TARGET = runTests
-SRCS = main.cpp base.cpp crypt.cpp key.cpp aes.cpp aes-ccm.cpp aes-gcm.cpp
+SRCS = main.cpp base.cpp crypt.cpp key.cpp aes-block.cpp aes-ccm.cpp aes-gcm.cpp
 OBJS = ${SRCS:.cpp=.o}
 
 GTEST_LIBRARIES = -L../../googletest/googlemock/gtest -lgtest -lpthread
