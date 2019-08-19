@@ -101,3 +101,53 @@ TEST_F(AesAeTest,CCM_encDecVerify_128bit_ForAllTagSize)
 	}
 	deleteKey();
 }
+
+TEST_F(AesAeTest,CCM_encDecVerify_192bit_ForAllTagSize)
+{
+	generateKey(192/*keySize*/);
+
+	int tagSize[]={4,6,8,10,12,14,16}; //in bytes, TEE Internal Core API Specification p.161
+
+	char nonce[13]={0,};
+	char aad[16]={2,};
+	char payload[TESTING_DATA_SIZE]={3,};
+	for(int i=0;i<sizeof(tagSize)/sizeof(int);i++) {
+		char *tag = new char[tagSize[i]];
+		memset(tag,0,tagSize[i]);
+		initParams(nonce,sizeof(nonce),tag,tagSize[i],aad,sizeof(aad),payload,sizeof(payload));
+
+		aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_ENCRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
+				plain_,sizeof(plain_),encod_,sizeof(encod_),tag_);
+		aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_DECRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
+				encod_,sizeof(encod_),decod_,sizeof(decod_),tag_);
+
+		ASSERT_EQ(memcmp(plain_,decod_,sizeof(plain_)),0);
+		clearParams();
+	}
+	deleteKey();
+}
+
+TEST_F(AesAeTest,CCM_encDecVerify_256bit_ForAllTagSize)
+{
+	generateKey(256/*keySize*/);
+
+	int tagSize[]={4,6,8,10,12,14,16}; //in bytes, TEE Internal Core API Specification p.161
+
+	char nonce[13]={0,};
+	char aad[16]={2,};
+	char payload[TESTING_DATA_SIZE]={3,};
+	for(int i=0;i<sizeof(tagSize)/sizeof(int);i++) {
+		char *tag = new char[tagSize[i]];
+		memset(tag,0,tagSize[i]);
+		initParams(nonce,sizeof(nonce),tag,tagSize[i],aad,sizeof(aad),payload,sizeof(payload));
+
+		aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_ENCRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
+				plain_,sizeof(plain_),encod_,sizeof(encod_),tag_);
+		aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_DECRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
+				encod_,sizeof(encod_),decod_,sizeof(decod_),tag_);
+
+		ASSERT_EQ(memcmp(plain_,decod_,sizeof(plain_)),0);
+		clearParams();
+	}
+	deleteKey();
+}
