@@ -87,13 +87,11 @@ TEST_F(AesAeTest,CCM_encDecVerify_ForAllKeyTagNonceSize)
 	char payload[TESTING_DATA_SIZE]={3,};
 
 	for(int i=0;i<sizeof(keySize)/sizeof(int);i++) {
+		generateKey(keySize[i]);
 		for(int j=0;j<sizeof(nonceSize)/sizeof(int);j++) {
+			char *nonce = new char[nonceSize[j]];
+			memset(nonce,0,nonceSize[j]);
 			for(int k=0;k<sizeof(tagSize)/sizeof(int);k++) {
-				generateKey(keySize[i]);
-
-				char *nonce = new char[nonceSize[j]];
-				memset(nonce,0,nonceSize[j]);
-
 				char *tag = new char[tagSize[k]];
 				memset(tag,0,tagSize[k]);
 
@@ -107,10 +105,10 @@ TEST_F(AesAeTest,CCM_encDecVerify_ForAllKeyTagNonceSize)
 				ASSERT_EQ(memcmp(plain_,decod_,sizeof(plain_)),0);
 
 				delete [] tag;
-				delete [] nonce;
 				clearParams();
-				deleteKey();
 			}
+			delete [] nonce;
 		}
+		deleteKey();
 	}
 }
