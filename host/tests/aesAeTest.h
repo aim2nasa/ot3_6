@@ -11,22 +11,22 @@
 
 class AesAeTest : public ::testing::Test{
 protected:
+	AesAeTest():keyObj_(0),keySize_(0){}
+
 	void SetUp() override
 	{
 		uuid_ = TA_KEY_UUID;
 		ASSERT_EQ(initializeContext(NULL,&o_),TEEC_SUCCESS);
 		ASSERT_EQ(openSession(&o_,&uuid_,TEEC_LOGIN_PUBLIC,NULL,NULL),TEEC_SUCCESS);
-
-		ASSERT_EQ(sizeof(TESTING_TEXT),TESTING_DATA_SIZE);
-		memcpy(plain_,TESTING_TEXT,TESTING_DATA_SIZE);
-		memset(encod_,0,TESTING_DATA_SIZE);
-		memset(decod_,0,TESTING_DATA_SIZE);
-
-		nonce_ = tag_ = NULL;
-		keyObj_ = keySize_ = nonceLen_ = tagLen_ = aadLen_ = payloadLen_ = 0;
 	}
 
-	void SetUp(uint32_t keySize,uint32_t nonceLen,uint32_t tagLen,uint32_t aadLen,uint32_t payloadLen)
+	void TearDown() override
+	{
+		closeSession(&o_);
+		finalizeContext(&o_);
+	}
+
+	void generateKey(uint32_t keySize)
 	{
 		uint32_t flags = TEE_DATA_FLAG_ACCESS_WRITE_META|
 					 TEE_DATA_FLAG_ACCESS_READ			|
@@ -36,33 +36,60 @@ protected:
 
 		ASSERT_EQ(keyGenerate(&o_,PRIVATE,"aeKey",flags,keySize,&keyObj_),TEEC_SUCCESS);
 		ASSERT_NE(keyObj_,0);
-
 		keySize_ = keySize;
+		ASSERT_GT(keySize_,0);
+	}
+
+	void deleteKey()
+	{
+		ASSERT_EQ(keyCloseAndDelete(&o_,keyObj_),TEEC_SUCCESS);
+		keyObj_ = 0;
+		keySize_ = 0;
+	}
+
+	void initParams(const char *nonce,uint32_t nonceLen,
+					const char *tag,uint32_t tagLen,
+					const char *aad,uint32_t aadLen,
+					const char *payload,uint32_t payloadLen)
+	{
+		ASSERT_NE(keyObj_,0);
+		ASSERT_GT(keySize_,0);
+
+		ASSERT_EQ(sizeof(TESTING_TEXT),TESTING_DATA_SIZE);
+		memcpy(plain_,TESTING_TEXT,TESTING_DATA_SIZE);
+		memset(encod_,0,TESTING_DATA_SIZE);
+		memset(decod_,0,TESTING_DATA_SIZE);
+
 		nonceLen_ = nonceLen;
 		tagLen_ = tagLen;
 		aadLen_ = aadLen;
 		payloadLen_ = payloadLen;
 
-		ASSERT_GT(keySize_,0);
+		nonce_ = new char[nonceLen_];
+		tag_ = new char[tagLen_];
+		aad_ = new char[aadLen_];
+		payload_ = new char[payloadLen_];
+
+		memcpy(nonce_,nonce,nonceLen_);
+		memcpy(tag_,tag,tagLen_);
+		memcpy(aad_,aad,aadLen_);
+		memcpy(payload_,payload,payloadLen_);
+
 		ASSERT_GT(nonceLen_,0);
 		ASSERT_GT(tagLen_,0);
 		ASSERT_GT(aadLen_,0);
 		ASSERT_GT(payloadLen_,0);
-
-		nonce_ = new char[nonceLen_];
-		memset(nonce_,0,nonceLen_);
-
-		tag_ = new char[tagLen_];
-		memset(tag_,0,tagLen_);
 	}
 
-	void TearDown() override
+	void clearParams()
 	{
+		delete [] payload_;
+		delete [] aad_;
 		delete [] tag_;
 		delete [] nonce_;
-		ASSERT_EQ(keyCloseAndDelete(&o_,keyObj_),TEEC_SUCCESS);
-		closeSession(&o_);
-		finalizeContext(&o_);
+
+		nonceLen_=tagLen_=aadLen_=payloadLen_=0;
+		nonce_=tag_=aad_=payload_=NULL;
 	}
 
 	oc o_;
@@ -72,12 +99,14 @@ protected:
 	char decod_[TESTING_DATA_SIZE];
 	char *nonce_;
 	char *tag_;
-	uint32_t keyObj_;
-	uint32_t keySize_;
+	char *aad_;
+	char *payload_;
 	uint32_t nonceLen_;
 	uint32_t tagLen_;
 	uint32_t aadLen_;
 	uint32_t payloadLen_;
+	uint32_t keyObj_;
+	uint32_t keySize_;
 };
 
 static void aeTest(oc *o,uint32_t algo,uint32_t mode,uint32_t keyObj,const void *nonce,size_t nonceLen,

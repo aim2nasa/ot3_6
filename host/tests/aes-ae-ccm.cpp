@@ -2,7 +2,13 @@
 
 TEST_F(AesAeTest,CCM_init)
 {
-	SetUp(256/*keySize*/,13/*nonceLen*/,4/*tagLen*/,16/*aadLen*/,TESTING_DATA_SIZE/*payloadLen*/);
+	generateKey(256/*keySize*/);
+
+	char nonce[13]={0,};
+	char tag[4]={1,};
+	char aad[16]={2,};
+	char payload[TESTING_DATA_SIZE]={3,};
+	initParams(nonce,sizeof(nonce),tag,sizeof(tag),aad,sizeof(aad),payload,sizeof(payload));
 
 	OperHandle op = TEE_HANDLE_NULL;
 	ASSERT_EQ(keyAllocOper(&o_,TEE_ALG_AES_CCM,TEE_MODE_ENCRYPT,keyObj_,&op),TEEC_SUCCESS);
@@ -12,15 +18,22 @@ TEST_F(AesAeTest,CCM_init)
 
 	ASSERT_EQ(keyAEInit(&o_,op,nonce_,nonceLen_,tagLen_,aadLen_,payloadLen_),TEEC_SUCCESS);
 
-	std::string aad("This is aad");
-	ASSERT_EQ(keyAEUpdateAad(&o_,op,aad.c_str(),aad.size()),TEEC_SUCCESS);
+	ASSERT_EQ(keyAEUpdateAad(&o_,op,aad,sizeof(aad)),TEEC_SUCCESS);
 
 	ASSERT_EQ(keyFreeOper(&o_,op),TEEC_SUCCESS);
+	clearParams();
+	deleteKey();
 }
 
 TEST_F(AesAeTest,CCM_encoding)
 {
-	SetUp(256/*keySize*/,13/*nonceLen*/,4/*tagLen*/,16/*aadLen*/,TESTING_DATA_SIZE/*payloadLen*/);
+	generateKey(256/*keySize*/);
+
+	char nonce[13]={0,};
+	char tag[4]={1,};
+	char aad[16]={2,};
+	char payload[TESTING_DATA_SIZE]={3,};
+	initParams(nonce,sizeof(nonce),tag,sizeof(tag),aad,sizeof(aad),payload,sizeof(payload));
 
 #ifdef _DEBUG_TEST_
 	std::cout<<"before encryption:";
@@ -36,11 +49,20 @@ TEST_F(AesAeTest,CCM_encoding)
 	for(size_t i=0;i<sizeof(encod_);i++) std::cout<<std::hex<<(int)encod_[i]<<" ";
 	std::cout<<std::endl;
 #endif
+	clearParams();
+	deleteKey();
 }
 
 TEST_F(AesAeTest,CCM_encDecVerify)
 {
-	SetUp(256/*keySize*/,13/*nonceLen*/,4/*tagLen*/,16/*aadLen*/,TESTING_DATA_SIZE/*payloadLen*/);
+	generateKey(256/*keySize*/);
+
+	char nonce[13]={0,};
+	char tag[4]={1,};
+	char aad[16]={2,};
+	char payload[TESTING_DATA_SIZE]={3,};
+	initParams(nonce,sizeof(nonce),tag,sizeof(tag),aad,sizeof(aad),payload,sizeof(payload));
+
 	aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_ENCRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
 			plain_,sizeof(plain_),encod_,sizeof(encod_),tag_);
 	aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_DECRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
@@ -51,4 +73,6 @@ TEST_F(AesAeTest,CCM_encDecVerify)
 #ifdef _DEBUG_TEST_
 	std::cout<<decod_<<std::endl;
 #endif
+	clearParams();
+	deleteKey();
 }
