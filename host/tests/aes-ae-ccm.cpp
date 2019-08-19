@@ -77,77 +77,40 @@ TEST_F(AesAeTest,CCM_encDecVerify)
 	deleteKey();
 }
 
-TEST_F(AesAeTest,CCM_encDecVerify_128bit_ForAllTagSize)
+static int keySize[]={128,192,256};
+static int tagSize[]={4,6,8,10,12,14,16}; //in bytes, TEE Internal Core API Specification p.161
+static int nonceSize[]={7,8,9,10,11,12,13};	//From Crypto++ AES CCM (https://www.cryptopp.com/wiki/CCM_Mode)
+
+TEST_F(AesAeTest,CCM_encDecVerify_ForAllKeyTagNonceSize)
 {
-	generateKey(128/*keySize*/);
-
-	int tagSize[]={4,6,8,10,12,14,16}; //in bytes, TEE Internal Core API Specification p.161
-
-	char nonce[13]={0,};
 	char aad[16]={2,};
 	char payload[TESTING_DATA_SIZE]={3,};
-	for(int i=0;i<sizeof(tagSize)/sizeof(int);i++) {
-		char *tag = new char[tagSize[i]];
-		memset(tag,0,tagSize[i]);
-		initParams(nonce,sizeof(nonce),tag,tagSize[i],aad,sizeof(aad),payload,sizeof(payload));
 
-		aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_ENCRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
-				plain_,sizeof(plain_),encod_,sizeof(encod_),tag_);
-		aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_DECRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
-				encod_,sizeof(encod_),decod_,sizeof(decod_),tag_);
+	for(int i=0;i<sizeof(keySize)/sizeof(int);i++) {
+		for(int j=0;j<sizeof(nonceSize)/sizeof(int);j++) {
+			for(int k=0;k<sizeof(tagSize)/sizeof(int);k++) {
+				generateKey(keySize[i]);
 
-		ASSERT_EQ(memcmp(plain_,decod_,sizeof(plain_)),0);
-		clearParams();
+				char *nonce = new char[nonceSize[j]];
+				memset(nonce,0,nonceSize[j]);
+
+				char *tag = new char[tagSize[k]];
+				memset(tag,0,tagSize[k]);
+
+				initParams(nonce,nonceSize[j],tag,tagSize[k],aad,sizeof(aad),payload,sizeof(payload));
+
+				aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_ENCRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
+						plain_,sizeof(plain_),encod_,sizeof(encod_),tag_);
+				aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_DECRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
+						encod_,sizeof(encod_),decod_,sizeof(decod_),tag_);
+
+				ASSERT_EQ(memcmp(plain_,decod_,sizeof(plain_)),0);
+
+				delete [] tag;
+				delete [] nonce;
+				clearParams();
+				deleteKey();
+			}
+		}
 	}
-	deleteKey();
-}
-
-TEST_F(AesAeTest,CCM_encDecVerify_192bit_ForAllTagSize)
-{
-	generateKey(192/*keySize*/);
-
-	int tagSize[]={4,6,8,10,12,14,16}; //in bytes, TEE Internal Core API Specification p.161
-
-	char nonce[13]={0,};
-	char aad[16]={2,};
-	char payload[TESTING_DATA_SIZE]={3,};
-	for(int i=0;i<sizeof(tagSize)/sizeof(int);i++) {
-		char *tag = new char[tagSize[i]];
-		memset(tag,0,tagSize[i]);
-		initParams(nonce,sizeof(nonce),tag,tagSize[i],aad,sizeof(aad),payload,sizeof(payload));
-
-		aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_ENCRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
-				plain_,sizeof(plain_),encod_,sizeof(encod_),tag_);
-		aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_DECRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
-				encod_,sizeof(encod_),decod_,sizeof(decod_),tag_);
-
-		ASSERT_EQ(memcmp(plain_,decod_,sizeof(plain_)),0);
-		clearParams();
-	}
-	deleteKey();
-}
-
-TEST_F(AesAeTest,CCM_encDecVerify_256bit_ForAllTagSize)
-{
-	generateKey(256/*keySize*/);
-
-	int tagSize[]={4,6,8,10,12,14,16}; //in bytes, TEE Internal Core API Specification p.161
-
-	char nonce[13]={0,};
-	char aad[16]={2,};
-	char payload[TESTING_DATA_SIZE]={3,};
-	for(int i=0;i<sizeof(tagSize)/sizeof(int);i++) {
-		char *tag = new char[tagSize[i]];
-		memset(tag,0,tagSize[i]);
-		initParams(nonce,sizeof(nonce),tag,tagSize[i],aad,sizeof(aad),payload,sizeof(payload));
-
-		aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_ENCRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
-				plain_,sizeof(plain_),encod_,sizeof(encod_),tag_);
-		aeTest(&o_,TEE_ALG_AES_CCM,TEE_MODE_DECRYPT,keyObj_,nonce_,nonceLen_,tagLen_,payloadLen_,"This is AAD Data",
-				encod_,sizeof(encod_),decod_,sizeof(decod_),tag_);
-
-		ASSERT_EQ(memcmp(plain_,decod_,sizeof(plain_)),0);
-		clearParams();
-	}
-	deleteKey();
 }
