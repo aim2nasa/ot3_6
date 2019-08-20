@@ -77,9 +77,17 @@ TEST_F(AesAeTest,GCM_encDecVerify)
 	deleteKey();
 }
 
+#ifdef __ALL_KEY_TAG_NONCE_TEST__
+//Test for all key,tag,nonce (consumes too much time)
 static int keySize[]={128,192,256};
 static int tagSize[]={12,13,14,15,16}; //in bytes, TEE Internal Core API Specification p.161
 static int nonceSize[]={7,8,9,10,11,12,13};	//http://220.230.122.228/redmine/projects/wc300/repository/cryptotest/revisions/master/entry/crypto++/gtest/aesGCM.cpp
+#else
+//Test for selected key,tag,nonce only
+static int keySize[]={256};
+static int tagSize[]={16};
+static int nonceSize[]={13};
+#endif
 
 TEST_F(AesAeTest,GCM_encDecVerify_ForAllKeyTagNonceSize)
 {

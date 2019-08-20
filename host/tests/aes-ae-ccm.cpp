@@ -77,9 +77,17 @@ TEST_F(AesAeTest,CCM_encDecVerify)
 	deleteKey();
 }
 
+#ifdef __ALL_KEY_TAG_NONCE_TEST__
+//Test for all key,tag,nonce (consumes too much time)
 static int keySize[]={128,192,256};
 static int tagSize[]={4,6,8,10,12,14,16}; //in bytes, TEE Internal Core API Specification p.161
 static int nonceSize[]={7,8,9,10,11,12,13};	//From Crypto++ AES CCM (https://www.cryptopp.com/wiki/CCM_Mode)
+#else
+//Test for selected key,tag,nonce only
+static int keySize[]={256};
+static int tagSize[]={6};
+static int nonceSize[]={3};
+#endif
 
 TEST_F(AesAeTest,CCM_encDecVerify_ForAllKeyTagNonceSize)
 {
