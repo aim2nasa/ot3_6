@@ -24,7 +24,7 @@ all:
 
 	@cd host;make
 	@cd ta;make
-	@./tnfs3.6.sh $(OPTEE_VERSION) $(TEE_TA_LOG_LEVEL)
+	@sudo ./tnfs3.6.sh $(OPTEE_VERSION) $(TEE_TA_LOG_LEVEL)
 
 clean:
 	@cd host;make clean
