@@ -2,7 +2,7 @@ CC      = $(CROSS_COMPILE)gcc
 
 CFLAGS += -Wall -I../../ta/include -I$(TEEC_EXPORT)/include
 CFLAGS += -I../libsess
-LDADD += -lteec -L$(TEEC_EXPORT)/TALL$(TEE_TA_LOG_LEVEL)/lib
+LDADD += -lteec -L$(TEEC_EXPORT)/lib
 
 LIBNAME = libfs
 BINARY = $(LIBNAME).so.1 
